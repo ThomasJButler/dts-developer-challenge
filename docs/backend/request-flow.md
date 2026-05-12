@@ -22,7 +22,7 @@ Client                Router (main.py)
   │  200 OK + JSON          │
 ```
 
-## `POST /tasks` (backend-3)
+## `POST /tasks`
 
 The most involved path. Validates the body, persists a new row, returns the created resource.
 
@@ -57,7 +57,7 @@ Client      Router            Service              Repository           DB
   │   Problem-Details body (see docs/api.md, error shape).                │
 ```
 
-## `GET /tasks/{id}` (backend-3)
+## `GET /tasks/{id}`
 
 ```text
 Client      Router            Service              Repository           DB
@@ -88,7 +88,7 @@ Client      Router            Service              Repository           DB
   │ ◄────────────│                                                     │
 ```
 
-## `GET /tasks` (backend-3)
+## `GET /tasks`
 
 ```text
 Client      Router            Service              Repository           DB
@@ -112,7 +112,7 @@ Client      Router            Service              Repository           DB
 
 An empty list is still a 200 with `[]`, never a 404.
 
-## `PATCH /tasks/{id}/status` (backend-3)
+## `PATCH /tasks/{id}/status`
 
 Only the `status` field can change. Status transitions are validated by the enum, not by a state-machine — any known status can move to any other.
 
@@ -147,7 +147,7 @@ Client      Router            Service              Repository           DB
   │ ◄────────────│                                                      │
 ```
 
-## `DELETE /tasks/{id}` (backend-3)
+## `DELETE /tasks/{id}`
 
 ```text
 Client      Router            Service              Repository           DB

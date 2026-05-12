@@ -8,13 +8,23 @@ liveness endpoint.
 
 from fastapi import FastAPI
 
+from app.errors import register_exception_handlers
+from app.routers import tasks as tasks_router
+
 # Title and version surface in the auto-generated OpenAPI docs at /docs.
-# Keeping the version at 0.1.0 until the API stabilises in backend-3.
 app = FastAPI(
     title="HMCTS Caseworker Tasks API",
     version="0.1.0",
     description="Backend service for managing caseworker tasks.",
 )
+
+# Wire the resource routers. One include_router call per resource keeps
+# the OpenAPI tag grouping clean.
+app.include_router(tasks_router.router)
+
+# Register Problem-Details exception handlers (see app/errors.py).
+# Routes raise domain exceptions; the handlers turn them into HTTP.
+register_exception_handlers(app)
 
 
 @app.get("/healthz", tags=["health"], summary="Liveness check")
