@@ -1,6 +1,6 @@
 # Data model
 
-> Status: **stub**. The Task ORM model and migration land in `backend-2`. This document records the canonical field list and intended schema so the build doesn't drift from the contract in [`../api.md`](../api.md).
+Live as of `backend-2`. The `Task` SQLAlchemy model is in [`backend/app/db/models.py`](../../backend/app/db/models.py); the first migration (`1ecce90525da_create_tasks_table`) is in [`backend/migrations/versions/`](../../backend/migrations/versions/). This document is the human-readable companion: shape, rationale, and the conventions that aren't obvious from the code.
 
 ## Tables (current)
 

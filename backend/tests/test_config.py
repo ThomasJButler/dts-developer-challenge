@@ -8,6 +8,7 @@ from app.config import Settings
 
 
 def test_database_url_read_from_env(monkeypatch):
+    """`Settings` reads `DATABASE_URL` from the process environment."""
     # `pydantic-settings` reads env vars case-insensitively; we use the
     # uppercase form here because that's how operators will set it.
     monkeypatch.setenv(
@@ -22,6 +23,7 @@ def test_database_url_read_from_env(monkeypatch):
 
 
 def test_database_url_has_safe_default(monkeypatch):
+    """When `DATABASE_URL` is unset, `Settings` still produces a usable URL."""
     # Belt-and-braces: when DATABASE_URL is absent, we still get a usable
     # URL pointing at the compose Postgres. Stops the app from crashing
     # at import time during local exploration.

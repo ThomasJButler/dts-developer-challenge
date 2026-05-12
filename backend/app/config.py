@@ -17,6 +17,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """Typed application configuration loaded from environment variables.
+
+    Add new fields here as the app grows; each one gets validated on
+    startup and is discoverable from a single location.
+    """
+
     # Connection string for SQLAlchemy. The `postgresql+psycopg://` scheme
     # selects the psycopg 3 driver explicitly; without it, SQLAlchemy falls
     # back to psycopg2, which we don't depend on.
