@@ -21,6 +21,13 @@ from sqlalchemy import engine_from_config, pool
 
 from app.config import get_settings
 
+# Importing models registers them on Base.metadata. Without this import
+# autogenerate would see an empty metadata and produce empty migrations.
+from app.db import (
+    Base,
+    models,  # noqa: F401
+)
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -34,9 +41,8 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # `target_metadata` is the schema model that --autogenerate compares
-# against the live DB. Currently None because no models exist yet;
-# backend-2 swaps this for `Base.metadata` once a Task model lands.
-target_metadata = None
+# against the live DB.
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
