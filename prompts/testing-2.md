@@ -16,7 +16,7 @@ Prerequisite: `testing-1` merged with CI green.
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/testing-polish
 ```
@@ -43,5 +43,5 @@ No personal names in the README. Screenshots must not show any personal info in 
 
 1. Tick the `testing-2` boxes in `plans/testing.md`.
 2. Tick any remaining boxes in the "Whole project, done when" section of `plans/overview.md`.
-3. Commit, push, open PR into `master`.
+3. Commit, push, open PR into `main`.
 4. Stop. This is the last task.

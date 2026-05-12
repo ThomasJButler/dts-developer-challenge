@@ -17,7 +17,7 @@ Prerequisite: `integration-1` merged. (Backend doesn't need to exist yet.)
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/frontend-skeleton
 ```
@@ -49,5 +49,5 @@ No personal names anywhere. The `package.json` `author` field must be the anonym
 ## Stop condition
 
 1. Tick the `frontend-1` boxes in `plans/frontend.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Stop.

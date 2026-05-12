@@ -17,7 +17,7 @@ Then implement `integration-2`. Prerequisites: `backend-3` and `frontend-3` must
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/integration-smoke
 ```
@@ -49,5 +49,5 @@ No personal names anywhere in committed files or the commit message.
 ## Stop condition
 
 1. Tick the `integration-2` boxes in `plans/integration.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Stop.
