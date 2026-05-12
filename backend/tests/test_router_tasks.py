@@ -123,3 +123,28 @@ class TestGetTask:
         assert body["status"] == 400
         assert body["title"] == "Bad Request"
         assert "not-a-uuid" in body["detail"]
+
+
+class TestListTasks:
+    """GET /tasks: empty and populated cases."""
+
+    def test_empty_list_returns_200(self, client):
+        """No tasks → 200 with `[]`, never 404."""
+        response = client.get("/tasks")
+
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_populated_list_returns_all_tasks(self, client):
+        """Each created task appears in the list response."""
+        titles = ["Case A", "Case B", "Case C"]
+        for title in titles:
+            client.post("/tasks", json={"title": title})
+
+        response = client.get("/tasks")
+
+        assert response.status_code == 200
+        body = response.json()
+        assert len(body) == 3
+        # Order isn't part of the contract; compare as sets.
+        assert {item["title"] for item in body} == set(titles)
