@@ -42,10 +42,10 @@ Done when all five endpoints work and the generated OpenAPI matches `docs/api.md
 
 Branch: `feature/backend-tests`. Depends on backend-3.
 
-- [ ] Pytest fixtures: ephemeral DB schema for the session, transactional rollback per test.
-- [ ] For every endpoint: happy path, validation failure, 404.
-- [ ] Reject unknown status values.
-- [ ] Due-date timezone test. Store UTC, reject naive datetimes.
+- [x] Pytest fixtures: ephemeral DB schema for the session, transactional rollback per test.
+- [x] For every endpoint: happy path, validation failure, 404.
+- [x] Reject unknown status values.
+- [x] Due-date timezone test. Store UTC, reject naive datetimes.
 
 Done when `pytest` is green and coverage on `app/routers` and `app/services` is at or above 85%.
 

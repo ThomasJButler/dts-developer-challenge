@@ -99,9 +99,7 @@ class TestUpdateStatus:
         created = task_service.create_task(db_session, TaskCreate(title="x"))
         before_updated_at = created.updated_at
 
-        updated = task_service.update_status(
-            db_session, created.id, TaskStatus.in_progress
-        )
+        updated = task_service.update_status(db_session, created.id, TaskStatus.in_progress)
 
         assert updated.status == TaskStatus.in_progress
         # `updated_at` is server-side onupdate=func.now(); it must change.
