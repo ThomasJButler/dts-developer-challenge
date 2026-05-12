@@ -66,9 +66,7 @@ def db_session(db_engine: Engine) -> Generator[Session, None, None]:
 
     @event.listens_for(session, "after_transaction_end")
     def _restart_savepoint(sess: Session, trans) -> None:
-        # When a SAVEPOINT ends (commit or rollback), open a new one
-        # immediately so the next session.commit() inside the test has
-        # somewhere to land.
+        """Reopen a SAVEPOINT after one ends so the test can keep committing."""
         if trans.nested and not trans._parent.nested:  # type: ignore[attr-defined]
             connection.begin_nested()
 

@@ -35,6 +35,7 @@ task_status_enum = sa.Enum(
 
 
 def upgrade() -> None:
+    """Create the `tasks` table and the `task_status` ENUM type."""
     op.create_table(
         "tasks",
         sa.Column("id", sa.UUID(), nullable=False),
@@ -64,6 +65,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    """Drop the `tasks` table and the orphan `task_status` ENUM type."""
     op.drop_table("tasks")
     # Explicitly drop the ENUM type — Alembic's autogen leaves it behind.
     task_status_enum.drop(op.get_bind(), checkfirst=False)

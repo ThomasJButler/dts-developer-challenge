@@ -51,6 +51,7 @@ class TaskCreate(BaseModel):
     @field_validator("due_at")
     @classmethod
     def _due_at_must_be_aware(cls, value: datetime | None) -> datetime | None:
+        """Bind `_require_aware` to the `due_at` field for Pydantic."""
         return _require_aware(value)
 
 

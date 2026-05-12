@@ -11,6 +11,7 @@ from app.main import app
 
 
 def test_healthz_returns_ok():
+    """`/healthz` returns 200 OK with the body `{"status": "ok"}`."""
     # TestClient runs the app in-process via httpx; no live server needed.
     client = TestClient(app)
     response = client.get("/healthz")
