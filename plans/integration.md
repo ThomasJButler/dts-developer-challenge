@@ -6,10 +6,10 @@ Wiring that sits between the two services: the compose file, environment configu
 
 Branch: `feature/integration-scaffold`. Depends on nothing. Start here.
 
-- [ ] `docker-compose.yml` with a `db` service (Postgres 16, named volume, healthcheck).
-- [ ] `.env.example` documenting `DATABASE_URL`, `API_BASE_URL`, `PORT`.
+- [x] `docker-compose.yml` with a `db` service (Postgres 16, named volume, healthcheck).
+- [x] `.env.example` documenting `DATABASE_URL`, `API_BASE_URL`, `PORT`.
 - [x] `.gitignore` covering Python, Node, venv, and `.env`.
-- [ ] `docs/api.md`: endpoint table, request/response examples, status codes. This is the contract; both sides code against it.
+- [x] `docs/api.md`: endpoint table, request/response examples, status codes. This is the contract; both sides code against it.
 
 Done when `docker compose up -d db` brings up Postgres and `docs/api.md` lists all five endpoints from the brief with example payloads.
 
