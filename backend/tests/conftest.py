@@ -16,12 +16,15 @@ failure and skips DB-bound tests with a clear reason. Schema tests
 from collections.abc import Generator
 
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
+from app.db.session import get_session
+from app.main import app
 
 
 @pytest.fixture(scope="session")
@@ -76,3 +79,21 @@ def db_session(db_engine: Engine) -> Generator[Session, None, None]:
         session.close()
         transaction.rollback()
         connection.close()
+
+
+@pytest.fixture()
+def client(db_session: Session) -> Generator[TestClient, None, None]:
+    """FastAPI TestClient wired to the rolled-back test session.
+
+    Overrides the `get_session` dependency so route handlers get the
+    same SAVEPOINT-protected session the test fixture uses. Anything
+    the route commits lands in the nested SAVEPOINT, which is rolled
+    back at teardown, so router tests share the no-persistence
+    guarantee with the model-level tests.
+    """
+    app.dependency_overrides[get_session] = lambda: db_session
+    try:
+        with TestClient(app) as test_client:
+            yield test_client
+    finally:
+        app.dependency_overrides.pop(get_session, None)
