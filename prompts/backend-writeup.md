@@ -36,16 +36,18 @@ Read each of these top-to-bottom. They are the source of truth — don't make an
 12. The single Alembic migration under `backend/migrations/versions/`.
 13. `CLAUDE.md` — the in-repo guidance for working sessions (gitignored locally; only present if you have it).
 
-Then run, in order, to see merged-branch history:
+Then run, in order, to see merged-branch history. Resolve the repo slug dynamically rather than hard-coding it, so this prompt stays anonymous and reusable:
 
 ```bash
+REPO=$(gh repo view --json owner,name --jq '"\(.owner.login)/\(.name)"')
+
 git log --oneline --all --decorate | head -40
-gh pr list --state merged --repo ThomasJButler/dts-developer-challenge --limit 10
-gh pr view 2 --repo ThomasJButler/dts-developer-challenge --json title,body,mergedAt
-gh pr view 3 --repo ThomasJButler/dts-developer-challenge --json title,body,mergedAt
-gh pr view 4 --repo ThomasJButler/dts-developer-challenge --json title,body,mergedAt
+gh pr list --state merged --repo "$REPO" --limit 10
+gh pr view 2 --repo "$REPO" --json title,body,mergedAt
+gh pr view 3 --repo "$REPO" --json title,body,mergedAt
+gh pr view 4 --repo "$REPO" --json title,body,mergedAt
 # PR #5 may or may not be open depending on when you run this:
-gh pr list --repo ThomasJButler/dts-developer-challenge --state all --search "backend-4 in:title" --json number,title,state,mergedAt
+gh pr list --repo "$REPO" --state all --search "backend-4 in:title" --json number,title,state,mergedAt
 ```
 
 Treat the merged PR descriptions and any `coderabbitai` review comments on them as primary evidence of what shipped and why.
@@ -110,7 +112,7 @@ A bullet list. Each entry: what surfaced, how it surfaced, what we changed. Keep
 - **Test fixture isolated writes but not reads.** The SAVEPOINT pattern rolled back writes but didn't hide pre-existing committed rows. A curl smoke that created a task in the dev DB caused `TestListTasks` to fail because the test saw the lingering row. Fixed in `backend-4` by moving the suite onto its own `tasks_test` database with auto-bootstrap (`CREATE DATABASE` + Alembic migrate at session start).
 - **Default branch mismatch breaks CodeRabbit auto-review.** The fork's default branch is still `master` (upstream mirror); PRs targeting `main` get an "Auto reviews are disabled on base/target branches other than the default branch" skip. Worked around by triggering reviews with `@coderabbitai review` on each PR. Permanent fix deferred (would need `gh repo edit --default-branch main`).
 - **Merge-commit author leaks the real GitHub handle.** Even with anonymous commit metadata, GitHub names the merge commit after the actor who clicked Merge. Flagged for submission-day cleanup; not blocking development.
-- **GitHub PR base defaulted to upstream HMCTS org.** `gh pr create` initially tried to open PR #1 against `hmcts:main`. Fixed with `gh repo set-default ThomasJButler/dts-developer-challenge`.
+- **GitHub PR base defaulted to upstream HMCTS org.** `gh pr create` initially tried to open PR #1 against `hmcts:main`, because the repo is a fork. Fixed by setting the fork as the default `gh` target (`gh repo set-default <fork>`).
 
 ### 6. Conventions and constraints
 
