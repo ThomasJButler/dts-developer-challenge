@@ -11,8 +11,9 @@ backend working directory if present. The `.env` is gitignored;
 """
 
 from functools import lru_cache
+from urllib.parse import urlparse, urlunparse
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -30,6 +31,29 @@ class Settings(BaseSettings):
         default="postgresql+psycopg://postgres:postgres@localhost:5432/tasks",
         description="SQLAlchemy database URL.",
     )
+
+    # URL the test suite uses. Defaults to the dev URL with the database
+    # name swapped to `tasks_test`, so a developer who only sets
+    # DATABASE_URL still gets a sensible isolated test database without
+    # extra config. Operators can override explicitly via TEST_DATABASE_URL.
+    test_database_url: str = Field(
+        default="",
+        description="SQLAlchemy URL for the pytest suite. Derived from database_url if empty.",
+    )
+
+    @model_validator(mode="after")
+    def _derive_test_database_url(self) -> "Settings":
+        """Compute test_database_url from database_url when not explicitly set.
+
+        Swap the final path segment (the database name) for `tasks_test`.
+        Avoids running the test suite against the dev `tasks` database,
+        which used to leak pre-existing rows into list-endpoint reads.
+        """
+        if not self.test_database_url:
+            parsed = urlparse(self.database_url)
+            new_path = "/tasks_test"
+            self.test_database_url = urlunparse(parsed._replace(path=new_path))
+        return self
 
     model_config = SettingsConfigDict(
         env_file=".env",
