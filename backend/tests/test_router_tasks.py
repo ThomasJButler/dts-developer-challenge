@@ -89,9 +89,37 @@ class TestPostTask:
 
 
 class TestGetTask:
-    """GET /tasks/{id} placeholder — fleshed out in cycle 2."""
+    """GET /tasks/{id}: happy path, not-found, malformed UUID."""
+
+    def test_returns_200_with_task_body(self, client):
+        """Existing id returns 200 with the full TaskRead body."""
+        created = client.post(
+            "/tasks",
+            json={"title": "Look up case CR-2026-0143"},
+        ).json()
+
+        response = client.get(f"/tasks/{created['id']}")
+
+        assert response.status_code == 200
+        assert response.json()["id"] == created["id"]
+        assert response.json()["title"] == "Look up case CR-2026-0143"
 
     def test_unknown_id_returns_404(self, client):
-        """A well-formed UUID with no row returns 404."""
+        """A well-formed UUID with no row returns 404 Problem-Details."""
         response = client.get(f"/tasks/{uuid4()}")
+
         assert response.status_code == 404
+        body = response.json()
+        assert body["status"] == 404
+        assert body["title"] == "Not Found"
+        assert "detail" in body
+
+    def test_malformed_uuid_returns_400(self, client):
+        """A non-UUID path string returns 400, not 422 (per docs/api.md)."""
+        response = client.get("/tasks/not-a-uuid")
+
+        assert response.status_code == 400
+        body = response.json()
+        assert body["status"] == 400
+        assert body["title"] == "Bad Request"
+        assert "not-a-uuid" in body["detail"]
