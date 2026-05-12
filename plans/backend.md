@@ -6,10 +6,10 @@ The FastAPI service. System of record for tasks. Owns the database, the migratio
 
 Branch: `feature/backend-skeleton`. Depends on integration-1.
 
-- [ ] `backend/requirements.txt` (FastAPI, uvicorn, SQLAlchemy, psycopg[binary], Alembic, Pydantic, python-dotenv) and `backend/requirements-dev.txt` (pytest, httpx, ruff).
-- [ ] `app/main.py` exposing `/healthz`.
-- [ ] `app/db/session.py` with the engine and session factory, plus `app/config.py` reading `DATABASE_URL`.
-- [ ] Alembic initialised under `backend/migrations/`.
+- [x] `backend/requirements.txt` (FastAPI, uvicorn, SQLAlchemy, psycopg[binary], Alembic, Pydantic, python-dotenv) and `backend/requirements-dev.txt` (pytest, httpx, ruff).
+- [x] `app/main.py` exposing `/healthz`.
+- [x] `app/db/session.py` with the engine and session factory, plus `app/config.py` reading `DATABASE_URL`.
+- [x] Alembic initialised under `backend/migrations/`.
 
 Done when `uvicorn app.main:app` serves `/healthz` returning `{"status":"ok"}` and `alembic upgrade head` runs cleanly against the compose Postgres.
 
