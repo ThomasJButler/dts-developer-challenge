@@ -17,7 +17,7 @@ Prerequisite: `backend-2` merged.
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/backend-endpoints
 ```
@@ -57,5 +57,5 @@ No personal names anywhere.
 ## Stop condition
 
 1. Tick the `backend-3` boxes in `plans/backend.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Stop. The deeper test coverage (edge cases, transitions) lives in `backend-4`.

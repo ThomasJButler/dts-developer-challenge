@@ -17,7 +17,7 @@ Prerequisite: `backend-1` merged.
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/backend-task-model
 ```
@@ -50,5 +50,5 @@ No personal names anywhere.
 ## Stop condition
 
 1. Tick the `backend-2` boxes in `plans/backend.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Stop.

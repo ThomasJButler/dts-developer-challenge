@@ -17,7 +17,7 @@ Prerequisites: `frontend-1` and `backend-3` merged. The client needs the contrac
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/frontend-api-client
 ```
@@ -49,5 +49,5 @@ No personal names anywhere.
 ## Stop condition
 
 1. Tick the `frontend-2` boxes in `plans/frontend.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Stop.

@@ -16,7 +16,7 @@ Then implement `integration-1` exactly as listed in `plans/integration.md`. Do n
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git checkout -b feature/integration-scaffold
 ```
 
@@ -52,5 +52,5 @@ When the checklist is satisfied:
 
 1. Tick the `integration-1` boxes in `plans/integration.md`.
 2. Commit with a concise message describing the scaffolding.
-3. Push the branch and open a PR into `master`.
+3. Push the branch and open a PR into `main`.
 4. Stop. Do not roll into the next task.

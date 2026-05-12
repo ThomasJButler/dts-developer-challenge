@@ -17,7 +17,7 @@ Prerequisite: `integration-1` must be merged. If it isn't, stop and report.
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/backend-skeleton
 ```
@@ -58,5 +58,5 @@ No personal names anywhere. Repo-local git config is already anonymous.
 ## Stop condition
 
 1. Tick the `backend-1` boxes in `plans/backend.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Stop.

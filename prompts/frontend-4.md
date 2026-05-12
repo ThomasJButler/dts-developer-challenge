@@ -16,7 +16,7 @@ Prerequisite: `frontend-3` merged.
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/frontend-tests
 ```
@@ -45,5 +45,5 @@ No personal names anywhere.
 ## Stop condition
 
 1. Tick the `frontend-4` boxes in `plans/frontend.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Stop.

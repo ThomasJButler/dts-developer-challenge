@@ -16,7 +16,7 @@ Prerequisites: `backend-4` and `frontend-4` merged. Both test suites must exist 
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/testing-ci
 ```
@@ -48,6 +48,6 @@ No personal names in the workflow file. The status badge URL points to the anony
 ## Stop condition
 
 1. Tick the `testing-1` boxes in `plans/testing.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Wait for the CI run to be green on the PR.
 4. Stop.

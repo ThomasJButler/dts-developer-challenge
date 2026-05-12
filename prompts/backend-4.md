@@ -17,7 +17,7 @@ Prerequisite: `backend-3` merged. By this point each endpoint already has a smal
 ## Branch
 
 ```bash
-git checkout master
+git checkout main
 git pull
 git checkout -b feature/backend-tests
 ```
@@ -49,5 +49,5 @@ No personal names anywhere.
 ## Stop condition
 
 1. Tick the `backend-4` boxes in `plans/backend.md`.
-2. Commit, push, open PR into `master`.
+2. Commit, push, open PR into `main`.
 3. Stop.
