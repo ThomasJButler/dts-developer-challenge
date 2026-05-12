@@ -7,7 +7,7 @@ One paste-ready prompt per branch in the plan. Use these to start fresh Claude C
 1. Pick the next task per `plans/overview.md` (start with `integration-1`).
 2. Open the matching file in this folder.
 3. Copy everything below the `---` divider.
-4. Open a new Claude Code session at the repo root (`/Users/tombutler/Repos/dts-developer-challenge`) and paste.
+4. Open a new Claude Code session at the repo root and paste.
 
 Each prompt is self-contained: it tells the new session which files to read first, what to build, and when to stop. The prompts do not re-state the plan content; they point at the trunk file in `plans/`. That way the plan stays the single source of truth and prompts don't drift.
 

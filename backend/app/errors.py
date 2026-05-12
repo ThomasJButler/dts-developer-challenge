@@ -60,7 +60,7 @@ async def _handle_validation_error(_request: Request, exc: Exception) -> JSONRes
     errors = _flatten_validation_errors(exc)
     return JSONResponse(
         status_code=422,
-        content=_problem(422, "Request body failed validation", errors=errors),
+        content=_problem(422, "Request validation failed", errors=errors),
     )
 
 

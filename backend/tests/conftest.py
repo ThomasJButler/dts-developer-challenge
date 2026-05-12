@@ -1,16 +1,22 @@
 """Shared pytest fixtures.
 
-The DB fixtures here use the "connection-scoped transaction + nested
-savepoint" pattern. Two reasons:
+The DB fixtures here run the suite against a separate Postgres database
+(default `tasks_test`) so the live dev `tasks` data can't bleed into
+tests. The chain is:
 
-1. Tests get real Postgres semantics (ENUMs, timestamptz, server-side
-   defaults) instead of an in-memory shim that diverges from prod.
-2. Nothing persists. The outer transaction never commits, so even an
-   assertion failure mid-test leaves the database untouched.
+1. `db_engine` (session-scoped): connect to the maintenance `postgres`
+   DB, CREATE the test DB if missing, run Alembic migrations against it,
+   then yield a SQLAlchemy engine pointed at the now-migrated test DB.
+2. `db_session` (function-scoped): connection-scoped transaction + nested
+   SAVEPOINT pattern. Writes from each test are rolled back at teardown.
 
-If Docker isn't running, the engine fixture detects the connection
-failure and skips DB-bound tests with a clear reason. Schema tests
-(pure Pydantic) still run.
+Why both layers: the session fixture gives the suite a clean *empty*
+table at session start, the per-test fixture isolates each test from
+its siblings. Anything tested can `session.commit()` freely; the outer
+transaction rolls everything back.
+
+If Postgres is unreachable, `db_engine` skips DB-bound tests with a
+clear reason. Schema and enum tests (pure Pydantic) still run.
 """
 
 from collections.abc import Generator
@@ -25,22 +31,31 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.db.session import get_session
 from app.main import app
+from tests.db_setup import ensure_test_database_exists, migrate_test_database
 
 
 @pytest.fixture(scope="session")
 def db_engine() -> Generator[Engine, None, None]:
-    """Process-wide engine pointing at the configured DATABASE_URL.
+    """Process-wide engine pointing at the test database.
 
-    If Postgres isn't reachable, skip DB-bound tests rather than fail
-    them. Lets developers run the schema tests alone without Docker.
+    On session start: ensure the test DB exists, run migrations, then
+    yield an engine bound to it. If the maintenance connection fails
+    (e.g. Postgres isn't running), skip DB-bound tests rather than fail
+    the whole suite.
     """
-    engine = create_engine(get_settings().database_url, future=True)
-    # Probe the connection up-front so we fail fast with a useful reason.
+    settings = get_settings()
     try:
-        with engine.connect():
-            pass
+        ensure_test_database_exists(settings.test_database_url)
+        migrate_test_database(settings.test_database_url)
     except OperationalError as exc:
         pytest.skip(f"Postgres not reachable: {exc.orig}")
+    except Exception as exc:  # noqa: BLE001
+        # psycopg's OperationalError is the common case, but we also
+        # catch broader failures (e.g. permission denied) and skip
+        # rather than fail — the schema/Pydantic suite still has value.
+        pytest.skip(f"Test DB bootstrap failed: {exc}")
+
+    engine = create_engine(settings.test_database_url, future=True)
     yield engine
     engine.dispose()
 

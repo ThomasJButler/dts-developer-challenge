@@ -32,9 +32,13 @@ from app.db import (
 # access to the values within the .ini file in use.
 config = context.config
 
-# Inject the URL from our Settings so the .ini doesn't carry secrets
-# and so both runtime + migrations share one config source.
-config.set_main_option("sqlalchemy.url", get_settings().database_url)
+# Inject the URL from our Settings unless the caller already set one
+# (the test-DB bootstrap in tests/db_setup.py pre-sets sqlalchemy.url on
+# the Config before invoking command.upgrade). This keeps `alembic upgrade
+# head` from the CLI pointing at the dev DB, while letting tests point
+# the same machinery at the test DB without env var trickery.
+if not config.get_main_option("sqlalchemy.url"):
+    config.set_main_option("sqlalchemy.url", get_settings().database_url)
 
 # Interpret the config file for Python logging.
 if config.config_file_name is not None:
