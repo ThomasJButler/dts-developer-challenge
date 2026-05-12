@@ -24,8 +24,10 @@ depends_on: str | tuple[str, ...] | None = None
 
 
 # Reused by both upgrade and downgrade so the type name lives in one
-# place. `create_type=False` because op.create_table emits the CREATE
-# TYPE on the column definition.
+# place. `create_type` is intentionally left unset: when this Enum is
+# attached to a column inside op.create_table, Alembic emits the
+# CREATE TYPE automatically. The downgrade still has to drop it
+# explicitly (see below).
 task_status_enum = sa.Enum(
     "todo",
     "in_progress",
