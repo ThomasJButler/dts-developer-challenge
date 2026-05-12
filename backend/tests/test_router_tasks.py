@@ -148,3 +148,89 @@ class TestListTasks:
         assert len(body) == 3
         # Order isn't part of the contract; compare as sets.
         assert {item["title"] for item in body} == set(titles)
+
+
+class TestPatchTaskStatus:
+    """PATCH /tasks/{id}/status: happy path + error paths."""
+
+    def test_updates_status_returns_full_task(self, client):
+        """Status change returns the updated task with new status."""
+        created = client.post("/tasks", json={"title": "x"}).json()
+
+        response = client.patch(
+            f"/tasks/{created['id']}/status",
+            json={"status": "in_progress"},
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["id"] == created["id"]
+        assert body["status"] == "in_progress"
+
+    def test_unknown_id_returns_404(self, client):
+        """A well-formed UUID with no row returns 404."""
+        response = client.patch(
+            f"/tasks/{uuid4()}/status",
+            json={"status": "done"},
+        )
+        assert response.status_code == 404
+
+    def test_malformed_uuid_returns_400(self, client):
+        """A non-UUID path string returns 400."""
+        response = client.patch(
+            "/tasks/not-a-uuid/status",
+            json={"status": "done"},
+        )
+        assert response.status_code == 400
+
+    def test_unknown_status_returns_422(self, client):
+        """A status value outside the enum returns 422."""
+        created = client.post("/tasks", json={"title": "x"}).json()
+
+        response = client.patch(
+            f"/tasks/{created['id']}/status",
+            json={"status": "banana"},
+        )
+
+        assert response.status_code == 422
+        assert any(err["field"] == "status" for err in response.json()["errors"])
+
+    def test_missing_status_returns_422(self, client):
+        """An empty body returns 422 with a `status` field error."""
+        created = client.post("/tasks", json={"title": "x"}).json()
+
+        response = client.patch(f"/tasks/{created['id']}/status", json={})
+
+        assert response.status_code == 422
+        assert any(err["field"] == "status" for err in response.json()["errors"])
+
+
+class TestDeleteTask:
+    """DELETE /tasks/{id}: happy path + error paths."""
+
+    def test_deletes_returns_204(self, client):
+        """A successful delete returns 204 with no body."""
+        created = client.post("/tasks", json={"title": "x"}).json()
+
+        response = client.delete(f"/tasks/{created['id']}")
+
+        assert response.status_code == 204
+        assert response.content == b""
+
+    def test_subsequent_get_returns_404(self, client):
+        """After delete, the task is gone."""
+        created = client.post("/tasks", json={"title": "x"}).json()
+        client.delete(f"/tasks/{created['id']}")
+
+        response = client.get(f"/tasks/{created['id']}")
+        assert response.status_code == 404
+
+    def test_unknown_id_returns_404(self, client):
+        """A well-formed UUID with no row returns 404."""
+        response = client.delete(f"/tasks/{uuid4()}")
+        assert response.status_code == 404
+
+    def test_malformed_uuid_returns_400(self, client):
+        """A non-UUID path string returns 400."""
+        response = client.delete("/tasks/not-a-uuid")
+        assert response.status_code == 400

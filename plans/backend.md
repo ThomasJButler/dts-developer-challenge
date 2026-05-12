@@ -28,13 +28,13 @@ Done when the migration applies and a unit test can round-trip a create/read on 
 
 Branch: `feature/backend-endpoints`. Depends on backend-2.
 
-- [ ] `POST /tasks`, create.
-- [ ] `GET /tasks/{id}`, read one (404 if missing).
-- [ ] `GET /tasks`, list. No pagination, it's out of scope.
-- [ ] `PATCH /tasks/{id}/status`, status update only, as the brief specifies.
-- [ ] `DELETE /tasks/{id}`, returns 204.
-- [ ] Pick a single error response shape (RFC 7807 or the FastAPI default) and stick to it.
-- [ ] OpenAPI tags and summaries on every route so `/docs` is actually readable.
+- [x] `POST /tasks`, create.
+- [x] `GET /tasks/{id}`, read one (404 if missing).
+- [x] `GET /tasks`, list. No pagination, it's out of scope.
+- [x] `PATCH /tasks/{id}/status`, status update only, as the brief specifies.
+- [x] `DELETE /tasks/{id}`, returns 204.
+- [x] Pick a single error response shape (RFC 7807 or the FastAPI default) and stick to it.
+- [x] OpenAPI tags and summaries on every route so `/docs` is actually readable.
 
 Done when all five endpoints work and the generated OpenAPI matches `docs/api.md`.
 
