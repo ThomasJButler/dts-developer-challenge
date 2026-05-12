@@ -1,0 +1,22 @@
+# Project metadata is intentionally minimal — we use plain requirements.txt
+# for installs (see CLAUDE.md) and only need this file for tool config.
+
+[tool.pytest.ini_options]
+# Pytest discovers tests from this directory. addopts keeps reports terse
+# and treats the project root as importable so `from app.main import app`
+# works without a setup.py shim.
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+pythonpath = ["."]
+
+[tool.ruff]
+# Match Python 3.11 (CLAUDE.md's documented floor). The default line length
+# of 88 is fine for this codebase.
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+# A modest selection: pyflakes (F), pycodestyle errors+warnings (E, W),
+# import ordering (I), bugbear (B), and pyupgrade (UP). Avoids the noisier
+# rule families until the code is stable enough to benefit from them.
+select = ["E", "W", "F", "I", "B", "UP"]
