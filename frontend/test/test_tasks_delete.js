@@ -29,6 +29,24 @@ describe('/tasks/:id/delete', () => {
       expect(extractCsrfToken(res.text)).to.have.length.greaterThan(10);
     });
 
+    it('renders the verbatim H1, both buttons with the right styling, and the back-link target', async () => {
+      const app = buildApp({ getTask: async () => SAMPLE_TASK });
+      const res = await request(app).get('/tasks/CR-2026-0142/delete');
+      // Verbatim H1 microcopy.
+      expect(res.text).to.match(/<h1[^>]*>Are you sure you want to delete this task\?<\/h1>/);
+      // Destructive button carries the warning class.
+      expect(res.text).to.match(
+        /<button[^>]*class="[^"]*govuk-button--warning[^"]*"[^>]*>\s*Yes, delete this task/,
+      );
+      // The "No, keep" link points at the detail page, not the list.
+      expect(res.text).to.match(/<a[^>]+href="\/tasks\/CR-2026-0142"[^>]*>No, keep this task<\/a>/);
+      // The back link also points at the detail page. GOV.UK renders
+      // href before class, so the regex tolerates either order.
+      expect(res.text).to.match(
+        /<a[^>]+href="\/tasks\/CR-2026-0142"[^>]*class="[^"]*govuk-back-link[^"]*"[^>]*>\s*Back to task/,
+      );
+    });
+
     it('redirects to /tasks with flash.notFound when the task does not exist', async () => {
       const app = buildApp({
         getTask: async () => { throw new NotFoundError({ detail: 'gone' }); },
