@@ -17,8 +17,8 @@ Done when `npm run dev` shows a GOV.UK-styled landing page at `/`.
 
 Branch: `feature/frontend-api-client`. Depends on frontend-1 and backend-3.
 
-- [ ] `app/lib/api-client.js`: thin `fetch` wrapper, base URL from env, JSON parse, 4xx/5xx mapped to typed errors.
-- [ ] Unit tests against a mocked HTTP layer.
+- [x] `app/lib/api-client.js`: thin `fetch` wrapper, base URL from env, JSON parse, 4xx/5xx mapped to typed errors.
+- [x] Unit tests against a mocked HTTP layer.
 
 Done when the client covers all five endpoints and tests pass without hitting a real backend.
 
