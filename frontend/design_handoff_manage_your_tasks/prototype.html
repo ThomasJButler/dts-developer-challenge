@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en-GB" class="govuk-template">
+<head>
+<meta charset="utf-8">
+<title>Manage your tasks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0c0c">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@5.7.1/dist/govuk/govuk-frontend.min.css">
+<style>
+  /* This service uses GOV.UK Frontend. GDS Transport is restricted, so the fallback
+     stack (Arial, Helvetica, sans-serif) is used. Production should ship the licensed
+     font via npm: govuk-frontend's transport font is internal to the GOV.UK estate. */
+
+  body { background: #f3f2f1; }
+  .govuk-main-wrapper { min-height: 60vh; }
+
+  /* Service header - a black bar with only the service name.
+     We deliberately omit the GOV.UK crown / wordmark; this is an internal HMCTS tool,
+     not a page on gov.uk. */
+  .service-header {
+    background: #0b0c0c;
+    border-bottom: 10px solid #1d70b8;
+  }
+  .service-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .service-header__name {
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.3;
+    text-decoration: none;
+  }
+  .service-header__name:hover { text-decoration: underline; text-underline-offset: 0.1em; }
+  .service-header__meta {
+    color: #b1b4b6;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+  }
+
+  /* Demo toolbar (not part of the production service - only visible in this prototype). */
+  .demo-toolbar {
+    background: #f3f2f1;
+    border-bottom: 1px solid #b1b4b6;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+  }
+  .demo-toolbar__inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 0;
+    flex-wrap: wrap;
+    color: #505a5f;
+  }
+  .demo-toolbar__label {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+    color: #0b0c0c;
+  }
+  .demo-toolbar__btn {
+    background: transparent;
+    border: 1px solid #b1b4b6;
+    padding: 4px 10px;
+    cursor: pointer;
+    font: inherit;
+    color: #0b0c0c;
+    border-radius: 0;
+  }
+  .demo-toolbar__btn:hover { background: #fff; }
+  .demo-toolbar__sep { color: #b1b4b6; }
+
+  /* Heading row used at the top of the list page. */
+  .heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .heading-row__title { margin-bottom: 0; }
+  @media (max-width: 40.0525em) {
+    .heading-row { flex-direction: column; align-items: stretch; }
+  }
+
+  /* Narrow-viewport card fallback for the tasks table.
+     Below 641px we stack each row as a labelled card. */
+  @media (max-width: 40.0525em) {
+    .task-table thead { position: absolute; left: -9999px; }
+    .task-table, .task-table tbody, .task-table tr, .task-table td {
+      display: block; width: 100%;
+    }
+    .task-table tr {
+      border: 1px solid #b1b4b6;
+      background: #ffffff;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .task-table td {
+      padding: 4px 0;
+      border: 0;
+    }
+    .task-table td::before {
+      content: attr(data-label);
+      display: block;
+      font-weight: 700;
+      color: #505a5f;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+    }
+    .task-table td[data-label="Title"] { font-size: 19px; }
+  }
+
+  /* Tighten the gap between the "Update status" and "Delete" blocks on detail. */
+  .detail-section { margin-top: govuk-spacing(8); }
+
+  /* Small label used above the page heading on detail and create pages
+     (the equivalent of the GOV.UK caption pattern). */
+  .govuk-caption-l { color: #505a5f; }
+
+  /* Footer */
+  .govuk-footer { margin-top: 40px; }
+
+  /* Print: hide demo toolbar */
+  @media print { .demo-toolbar { display: none; } }
+</style>
+</head>
+<body class="govuk-template__body">
+<script>document.body.className = ((document.body.className || '') + ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '')).trim();</script>
+
+<a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
+
+<header class="service-header" role="banner">
+  <div class="govuk-width-container">
+    <div class="service-header__inner">
+      <a href="#/tasks" class="service-header__name">Manage your tasks</a>
+      <span class="service-header__meta">HMCTS caseworker</span>
+    </div>
+  </div>
+</header>
+
+<div class="demo-toolbar" aria-label="Prototype controls">
+  <div class="govuk-width-container">
+    <div class="demo-toolbar__inner">
+      <span class="demo-toolbar__label">Prototype</span>
+      <span>This is a design prototype, not a working service. Use the controls to jump to states.</span>
+      <span class="demo-toolbar__sep">|</span>
+      <button class="demo-toolbar__btn" data-demo="empty">Empty list</button>
+      <button class="demo-toolbar__btn" data-demo="seed">Seeded list</button>
+      <button class="demo-toolbar__btn" data-demo="error">Create - error state</button>
+      <button class="demo-toolbar__btn" data-demo="success">Detail - success banner</button>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-width-container">
+  <main class="govuk-main-wrapper" id="main-content" role="main" tabindex="-1">
+    <div id="app" aria-live="polite"></div>
+  </main>
+</div>
+
+<footer class="govuk-footer" role="contentinfo">
+  <div class="govuk-width-container">
+    <div class="govuk-footer__meta">
+      <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+        <h2 class="govuk-visually-hidden">Support links</h2>
+        <ul class="govuk-footer__inline-list">
+          <li class="govuk-footer__inline-list-item"><a class="govuk-footer__link" href="spec.html">Design spec</a></li>
+          <li class="govuk-footer__inline-list-item"><a class="govuk-footer__link" href="index.html">About this prototype</a></li>
+        </ul>
+        <span class="govuk-footer__licence-description">Built with GOV.UK Frontend. Prototype only - not a live service.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="prototype.js"></script>
+</body>
+</html>

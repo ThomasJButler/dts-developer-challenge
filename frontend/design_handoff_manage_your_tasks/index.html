@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en-GB" class="govuk-template">
+<head>
+<meta charset="utf-8">
+<title>Manage your tasks - HMCTS design</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@5.7.1/dist/govuk/govuk-frontend.min.css">
+<style>
+  body { background: #ffffff; }
+  .service-header { background: #0b0c0c; border-bottom: 10px solid #1d70b8; }
+  .service-header__inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 15px 0; gap: 16px; flex-wrap: wrap;
+  }
+  .service-header__name {
+    color: #ffffff; font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700; font-size: 19px; text-decoration: none;
+  }
+  .service-header__meta { color: #b1b4b6; font-family: Arial, Helvetica, sans-serif; font-size: 16px; }
+
+  .card-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 20px; }
+  @media (min-width: 48.0625em) { .card-grid { grid-template-columns: 1fr 1fr; } }
+  .card {
+    border: 1px solid #b1b4b6;
+    padding: 25px 25px 30px;
+    background: #fff;
+    display: flex; flex-direction: column;
+  }
+  .card h2 { margin-top: 0; }
+  .card p { flex: 1; }
+  .card a.govuk-button { align-self: flex-start; margin-bottom: 0; }
+</style>
+</head>
+<body class="govuk-template__body">
+<a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
+
+<header class="service-header" role="banner">
+  <div class="govuk-width-container">
+    <div class="service-header__inner">
+      <a href="index.html" class="service-header__name">Manage your tasks</a>
+      <span class="service-header__meta">Design deliverables</span>
+    </div>
+  </div>
+</header>
+
+<div class="govuk-width-container">
+  <main class="govuk-main-wrapper" id="main-content" role="main">
+    <span class="govuk-caption-l">HMCTS internal tool</span>
+    <h1 class="govuk-heading-xl">Design for the caseworker task-management tool</h1>
+    <p class="govuk-body-l">A single-user task tool built on GOV.UK Frontend. Server-rendered Nunjucks, progressive enhancement only, WCAG 2.2 AA.</p>
+
+    <p class="govuk-body">Two artefacts to review:</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h2 class="govuk-heading-m">Interactive prototype</h2>
+        <p class="govuk-body">A working, clickable version of all three screens, plus the delete confirmation, the empty state, the validation error state, and the success banner. Built with vanilla JavaScript over a fixed GOV.UK Frontend layout. Use the toolbar at the top to jump between states.</p>
+        <a class="govuk-button" href="prototype.html" data-module="govuk-button">Open the prototype</a>
+      </div>
+      <div class="card">
+        <h2 class="govuk-heading-m">Design spec</h2>
+        <p class="govuk-body">Annotated Nunjucks for every screen, rationale per choice, the full microcopy set in UK English, an accessibility checklist for the build team, and an explicit out-of-scope list. Each screen includes a live preview pulled from the prototype.</p>
+        <a class="govuk-button govuk-button--secondary" href="spec.html" data-module="govuk-button">Read the spec</a>
+      </div>
+    </div>
+
+    <h2 class="govuk-heading-l govuk-!-margin-top-9">A short note on constraints</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>The prototype is JavaScript only because the design needs to be clickable here. The actual service is server-rendered Nunjucks consumed by an Express app, with no client-side router and no XHR. The spec shows the production markup.</li>
+      <li>The header is intentionally plain. This is an internal HMCTS tool, not a page on gov.uk, so it does not carry the GOV.UK crown or wordmark. The visual language, spacing, and components are GOV.UK Frontend.</li>
+      <li>All example data is fictional. Case references follow the pattern <code>CR-2026-0142</code>. No real names, no real emails, no real photos appear anywhere.</li>
+    </ul>
+  </main>
+</div>
+
+<footer class="govuk-footer" role="contentinfo">
+  <div class="govuk-width-container">
+    <div class="govuk-footer__meta">
+      <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+        <ul class="govuk-footer__inline-list">
+          <li class="govuk-footer__inline-list-item"><a class="govuk-footer__link" href="prototype.html">Prototype</a></li>
+          <li class="govuk-footer__inline-list-item"><a class="govuk-footer__link" href="spec.html">Design spec</a></li>
+        </ul>
+        <span class="govuk-footer__licence-description">Built with GOV.UK Frontend. Design deliverables, not a live service.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

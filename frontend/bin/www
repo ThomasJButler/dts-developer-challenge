@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+'use strict';
+
+require('dotenv').config();
+
+const { createApp } = require('../app/app');
+
+const port = parseInt(process.env.PORT || '3000', 10);
+
+createApp().listen(port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`Manage your tasks listening on http://localhost:${port}`);
+});

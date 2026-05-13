@@ -6,10 +6,10 @@ Express + Nunjucks + GOV.UK Frontend. Server-rendered. A thin client over the ba
 
 Branch: `feature/frontend-skeleton`. Depends on integration-1.
 
-- [ ] `frontend/package.json` (express, nunjucks, govuk-frontend, dotenv, undici or node-fetch, nodemon, mocha, supertest, chai, eslint).
-- [ ] Express app with Nunjucks pointed at the `govuk-frontend` templates.
-- [ ] Asset pipeline for the GOV.UK CSS/JS/assets. Use the pre-built dist if it's simpler than wiring up Sass.
-- [ ] Base layout extending `govuk/template.njk` with header, footer, and a service name.
+- [x] `frontend/package.json` (express, nunjucks, govuk-frontend, dotenv, undici or node-fetch, nodemon, mocha, supertest, chai, eslint).
+- [x] Express app with Nunjucks pointed at the `govuk-frontend` templates.
+- [x] Asset pipeline for the GOV.UK CSS/JS/assets. Use the pre-built dist if it's simpler than wiring up Sass.
+- [x] Base layout extending `govuk/template.njk` with header, footer, and a service name.
 
 Done when `npm run dev` shows a GOV.UK-styled landing page at `/`.
 
