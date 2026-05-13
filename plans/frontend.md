@@ -40,8 +40,10 @@ Branch: `feature/frontend-tests`. Depends on frontend-3.
 
 - [ ] Supertest route tests with the API client mocked. Don't hit a real backend.
 - [ ] Render assertions on the list page (empty and populated), the create form, and the error summary state.
+- [ ] Stretch: backend `PATCH /tasks/{id}/due` endpoint. Documented widening beyond the brief ("status is the only mutable field") because a no-due-date task otherwise needs delete-and-recreate to add one.
+- [ ] Stretch: editable due date on the detail page. Separate form parallel to "Update status". Reuses `validateDue` from the create flow. Submitting all five date inputs blank clears the due date.
 
-Done when `npm test` is green and the route handlers are covered.
+Done when `npm test` is green, the route handlers are covered, the new due-date flow works end-to-end against a running backend, and `docs/api.md` documents the new endpoint.
 
 ## Notes
 
