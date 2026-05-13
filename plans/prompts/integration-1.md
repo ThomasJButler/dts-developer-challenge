@@ -17,7 +17,7 @@ Then implement `integration-1` exactly as listed in `plans/integration.md`. Do n
 
 ```bash
 git checkout main
-git checkout -b feature/integration-scaffold
+git checkout -b feature/integration
 ```
 
 ## Scope

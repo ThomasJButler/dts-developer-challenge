@@ -19,7 +19,7 @@ Then implement `integration-2`. Prerequisites: `backend-3` and `frontend-3` must
 ```bash
 git checkout main
 git pull
-git checkout -b feature/integration-smoke
+git checkout -b feature/integration
 ```
 
 ## Scope
