@@ -59,10 +59,21 @@ function createApiClient({ baseUrl, fetchImpl } = {}) {
     // letting res.json() throw on an empty stream.
     if (res.status === 204) return null;
 
+    // Read the body as text first so a JSON content-type with an empty or
+    // malformed payload (a truncating proxy, a misconfigured 502) doesn't
+    // throw SyntaxError out of res.json() and skip the typed-error mapping
+    // below. The non-JSON branch already used res.text(); this generalises
+    // the same defence to every response.
     const contentType = (res.headers.get && res.headers.get('content-type')) || '';
-    const parsed = contentType.includes('application/json')
-      ? await res.json()
-      : await res.text().catch(() => null);
+    const raw = await res.text().catch(() => null);
+    let parsed = raw;
+    if (raw && contentType.includes('application/json')) {
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        parsed = raw;
+      }
+    }
 
     if (res.ok) return parsed;
     if (res.status === 404) throw new NotFoundError(parsed);

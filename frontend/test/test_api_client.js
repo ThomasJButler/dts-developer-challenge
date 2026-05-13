@@ -283,4 +283,41 @@ describe('api-client', () => {
       expect(fetchFn.calls[0].url).to.equal('http://api.test/tasks');
     });
   });
+
+  describe('malformed responses', () => {
+    it('throws ApiError (not SyntaxError) on a non-OK response with JSON content-type but empty body', async () => {
+      // Models an upstream surprise: Content-Type says application/json but
+      // the body is empty (truncating proxy, misconfigured 502). The native
+      // Response.json() rejects with SyntaxError in this case; the client
+      // must read the body as text first so route handlers still receive a
+      // typed ApiError rather than having to catch SyntaxError separately.
+      const stub = {
+        status: 500,
+        ok: false,
+        headers: {
+          get: name => (name.toLowerCase() === 'content-type' ? 'application/json' : null),
+        },
+        json: async () => {
+          throw new SyntaxError('Unexpected end of JSON input');
+        },
+        text: async () => '',
+      };
+      const client = createApiClient({
+        baseUrl: 'http://api.test',
+        fetchImpl: async () => stub,
+      });
+
+      let thrown;
+      try {
+        await client.listTasks();
+      } catch (e) {
+        thrown = e;
+      }
+      expect(thrown).to.be.an.instanceof(ApiError);
+      expect(thrown).to.not.be.an.instanceof(SyntaxError);
+      expect(thrown.status).to.equal(500);
+      expect(thrown.body).to.equal('');
+      expect(thrown.message).to.equal('HTTP 500');
+    });
+  });
 });
