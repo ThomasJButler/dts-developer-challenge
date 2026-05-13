@@ -1,0 +1,79 @@
+{% extends "layouts/main.njk" %}
+
+{% from "govuk/components/back-link/macro.njk"           import govukBackLink %}
+{% from "govuk/components/button/macro.njk"              import govukButton %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/radios/macro.njk"              import govukRadios %}
+{% from "govuk/components/summary-list/macro.njk"        import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk"                 import govukTag %}
+
+{% block beforeContent %}
+  {{ govukBackLink({ text: "Back to your tasks", href: "/tasks" }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if flash.created %}
+        {{ govukNotificationBanner({
+          type: "success",
+          titleText: "Success",
+          text: "Task created"
+        }) }}
+      {% elif flash.statusUpdated %}
+        {{ govukNotificationBanner({
+          type: "success",
+          titleText: "Success",
+          text: "Status updated"
+        }) }}
+      {% endif %}
+
+      <span class="govuk-caption-l">Task {{ task.id }}</span>
+      <h1 class="govuk-heading-l">{{ task.title }}</h1>
+
+      {% set statusTagHtml = govukTag({ text: task.statusLabel, classes: task.statusTagClass }) %}
+
+      {{ govukSummaryList({
+        rows: [
+          { key: { text: "Reference" },    value: { text: task.id } },
+          { key: { text: "Status" },       value: { html: statusTagHtml } },
+          { key: { text: "Due" },          value: { text: task.dueLabel or "Not set" } },
+          { key: { text: "Description" },  value: { text: task.description or "Not set" } },
+          { key: { text: "Created" },      value: { text: task.createdLabel } },
+          { key: { text: "Last updated" }, value: { text: task.updatedLabel } }
+        ]
+      }) }}
+
+      <form method="post" action="/tasks/{{ task.id }}/status" class="govuk-!-margin-top-8">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+        {{ govukRadios({
+          idPrefix: "status-update",
+          name: "status",
+          fieldset: { legend: { text: "Update status", classes: "govuk-fieldset__legend--m" } },
+          hint: { text: "Changing status saves immediately." },
+          items: [
+            { value: "todo",        text: "To do",       checked: task.status == "todo" },
+            { value: "in_progress", text: "In progress", checked: task.status == "in_progress" },
+            { value: "done",        text: "Done",        checked: task.status == "done" }
+          ]
+        }) }}
+
+        {{ govukButton({ text: "Save status" }) }}
+      </form>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <h2 class="govuk-heading-m">Delete this task</h2>
+      <p class="govuk-body">Deleting removes the task and its history. This cannot be undone.</p>
+
+      {{ govukButton({
+        text: "Delete this task",
+        href: "/tasks/" + task.id + "/delete",
+        classes: "govuk-button--warning"
+      }) }}
+
+    </div>
+  </div>
+{% endblock %}

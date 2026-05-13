@@ -26,11 +26,11 @@ Done when the client covers all five endpoints and tests pass without hitting a 
 
 Branch: `feature/frontend-task-ui`. Depends on frontend-2.
 
-- [ ] `GET /tasks` list page: table of tasks, status tag component, due date formatted in Europe/London.
-- [ ] `GET /tasks/new` and `POST /tasks`: create form using GOV.UK input, textarea, date input, and radios for status. Error summary on validation failure.
-- [ ] `GET /tasks/:id` detail page with an "Update status" form and a "Delete" action.
-- [ ] `POST /tasks/:id/status` and `POST /tasks/:id/delete`. POST-only is fine, no need for method-override unless it gets in the way.
-- [ ] CSRF protection. Anything rendering forms needs it.
+- [x] `GET /tasks` list page: table of tasks, status tag component, due date formatted in Europe/London.
+- [x] `GET /tasks/new` and `POST /tasks`: create form using GOV.UK input, textarea, date input, and radios for status. Error summary on validation failure.
+- [x] `GET /tasks/:id` detail page with an "Update status" form and a "Delete" action.
+- [x] `POST /tasks/:id/status` and `POST /tasks/:id/delete`. POST-only is fine, no need for method-override unless it gets in the way.
+- [x] CSRF protection. Anything rendering forms needs it.
 
 Done when every CRUD flow works against a running backend and forms re-render with errors plus the values the user typed.
 

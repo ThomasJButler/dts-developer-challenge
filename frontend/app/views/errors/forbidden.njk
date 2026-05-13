@@ -1,0 +1,13 @@
+{% extends "layouts/main.njk" %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Sorry, your request could not be processed</h1>
+      <p class="govuk-body">{{ reason }}.</p>
+      <p class="govuk-body">
+        Return to <a class="govuk-link" href="/tasks">your tasks</a> and try again.
+      </p>
+    </div>
+  </div>
+{% endblock %}

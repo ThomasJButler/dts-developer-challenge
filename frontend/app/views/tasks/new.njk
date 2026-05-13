@@ -1,0 +1,87 @@
+{% extends "layouts/main.njk" %}
+
+{% from "govuk/components/back-link/macro.njk"      import govukBackLink %}
+{% from "govuk/components/button/macro.njk"         import govukButton %}
+{% from "govuk/components/date-input/macro.njk"     import govukDateInput %}
+{% from "govuk/components/error-summary/macro.njk"  import govukErrorSummary %}
+{% from "govuk/components/input/macro.njk"          import govukInput %}
+{% from "govuk/components/radios/macro.njk"         import govukRadios %}
+{% from "govuk/components/textarea/macro.njk"       import govukTextarea %}
+
+{% block beforeContent %}
+  {{ govukBackLink({ text: "Back to your tasks", href: "/tasks" }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if errors %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errorSummary
+        }) }}
+      {% endif %}
+
+      <span class="govuk-caption-l">Tasks</span>
+      <h1 class="govuk-heading-l">Create a task</h1>
+
+      <form method="post" action="/tasks" novalidate>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+        {{ govukInput({
+          label: { text: "Title", classes: "govuk-label--m" },
+          hint:  { text: 'Use a short, specific description, for example "Review bundle for CR-2026-0142".' },
+          id: "title",
+          name: "title",
+          value: values.title,
+          attributes: { maxlength: 255, autocomplete: "off" },
+          errorMessage: errors.title and { text: errors.title }
+        }) }}
+
+        {{ govukTextarea({
+          label: { text: "Description", classes: "govuk-label--m" },
+          hint:  { text: "Add any context that will help future you. You can leave this blank." },
+          id: "description",
+          name: "description",
+          rows: 5,
+          value: values.description
+        }) }}
+
+        {{ govukRadios({
+          idPrefix: "status",
+          name: "status",
+          fieldset: { legend: { text: "Status", classes: "govuk-fieldset__legend--m" } },
+          hint: { text: 'New tasks usually start as "To do".' },
+          errorMessage: errors.status and { text: errors.status },
+          items: [
+            { value: "todo",        text: "To do",       checked: values.status == "todo" },
+            { value: "in_progress", text: "In progress", checked: values.status == "in_progress" },
+            { value: "done",        text: "Done",        checked: values.status == "done" }
+          ]
+        }) }}
+
+        {{ govukDateInput({
+          id: "due",
+          namePrefix: "due",
+          fieldset: { legend: { text: "Due date and time (optional)", classes: "govuk-fieldset__legend--m" } },
+          hint: { text: "For example, 20 5 2026 at 09 00. Leave blank if there is no deadline." },
+          errorMessage: errors.due and { text: errors.due },
+          items: [
+            { name: "day",    label: "Day",    classes: "govuk-input--width-2", value: values.due.day },
+            { name: "month",  label: "Month",  classes: "govuk-input--width-2", value: values.due.month },
+            { name: "year",   label: "Year",   classes: "govuk-input--width-4", value: values.due.year },
+            { name: "hour",   label: "Hour",   classes: "govuk-input--width-2", value: values.due.hour },
+            { name: "minute", label: "Minute", classes: "govuk-input--width-2", value: values.due.minute }
+          ]
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({ text: "Save task" }) }}
+          <a class="govuk-link" href="/tasks">Cancel</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+{% endblock %}

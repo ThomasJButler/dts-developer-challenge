@@ -1,0 +1,83 @@
+{% extends "layouts/main.njk" %}
+
+{% from "govuk/components/button/macro.njk"               import govukButton %}
+{% from "govuk/components/inset-text/macro.njk"           import govukInsetText %}
+{% from "govuk/components/notification-banner/macro.njk"  import govukNotificationBanner %}
+{% from "govuk/components/tag/macro.njk"                  import govukTag %}
+{% from "govuk/components/table/macro.njk"                import govukTable %}
+{% from "govuk/components/error-summary/macro.njk"        import govukErrorSummary %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if flash.created %}
+        {{ govukNotificationBanner({
+          type: "success",
+          titleText: "Success",
+          text: "Task created"
+        }) }}
+      {% elif flash.deleted %}
+        {{ govukNotificationBanner({
+          type: "success",
+          titleText: "Success",
+          text: "Task deleted"
+        }) }}
+      {% endif %}
+
+      {% if flash.notFound %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [{ text: "This task could not be found. It may have been deleted." }]
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">Your tasks</h1>
+      <p class="govuk-body-l">Review and update the work items assigned to you. Tasks you create here are only visible to you.</p>
+
+      {% if tasks.length == 0 %}
+        {{ govukInsetText({
+          html: '<p class="govuk-body">You have no tasks yet.</p>' +
+                '<a class="govuk-button" href="/tasks/new" data-module="govuk-button">Create your first task</a>'
+        }) }}
+      {% else %}
+        {{ govukButton({
+          text: "Create a task",
+          href: "/tasks/new"
+        }) }}
+
+        {% set rows = [] %}
+        {% for t in tasks %}
+          {% set titleCellHtml %}
+            <a class="govuk-link govuk-link--no-visited-state" href="/tasks/{{ t.id }}">{{ t.title }}</a>
+            <span class="govuk-hint govuk-!-margin-bottom-0 govuk-!-font-size-16">{{ t.id }}</span>
+          {% endset %}
+          {% set actionsCellHtml %}
+            <a class="govuk-link govuk-link--no-visited-state" href="/tasks/{{ t.id }}">View<span class="govuk-visually-hidden"> {{ t.id }}</span></a>
+          {% endset %}
+          {% set tagHtml = govukTag({ text: t.statusLabel, classes: t.statusTagClass }) %}
+          {% set rows = (rows.push([
+            { html: titleCellHtml,   attributes: { "data-label": "Title" } },
+            { html: tagHtml,         attributes: { "data-label": "Status" } },
+            { text: t.dueLabel or "Not set", attributes: { "data-label": "Due date" } },
+            { html: actionsCellHtml, attributes: { "data-label": "Actions" } }
+          ]), rows) %}
+        {% endfor %}
+
+        {{ govukTable({
+          caption: "Your tasks, " + tasks.length + " total",
+          captionClasses: "govuk-visually-hidden",
+          head: [
+            { text: "Title" },
+            { text: "Status" },
+            { text: "Due date" },
+            { text: "Actions" }
+          ],
+          rows: rows,
+          classes: "task-table"
+        }) }}
+      {% endif %}
+
+    </div>
+  </div>
+{% endblock %}

@@ -3,12 +3,27 @@
 const path = require('path');
 
 const express = require('express');
+const session = require('express-session');
 const nunjucks = require('nunjucks');
+
+const { createApiClient } = require('./lib/api-client');
+const { tokenMiddleware, verifyOnPost } = require('./lib/csrf');
+const { flashMiddleware } = require('./lib/flash');
 
 const ROOT_DIR = path.join(__dirname, '..');
 const GOVUK_DIST = path.join(ROOT_DIR, 'node_modules', 'govuk-frontend', 'dist');
 
-function createApp() {
+function resolveSessionSecret() {
+  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('SESSION_SECRET must be set in production');
+  }
+  // Dev / test default. Not secret in any meaningful sense — the guard
+  // above stops this value reaching production.
+  return 'dev-only-session-secret-not-for-production';
+}
+
+function createApp({ apiClient } = {}) {
   const app = express();
 
   // Nunjucks resolves "govuk/template.njk" and the component macros from the
@@ -29,6 +44,10 @@ function createApp() {
   app.locals.assetPath = '/assets';
   app.locals.themeColor = '#0b0c0c';
 
+  // The API client is the integration seam to the backend. Tests inject a
+  // stub; production builds one from process.env.API_BASE_URL.
+  app.locals.apiClient = apiClient || createApiClient();
+
   // govuk-frontend.min.css hard-codes absolute "url(/assets/fonts/…)" URLs
   // for its bundled web fonts and the GOV.UK crest, so the assets folder
   // must be reachable at /assets exactly. /govuk/ exposes the rest of the
@@ -38,7 +57,24 @@ function createApp() {
   app.use('/govuk', express.static(govukRoot));
   app.use('/public', express.static(path.join(ROOT_DIR, 'public')));
 
+  app.use(express.urlencoded({ extended: false }));
+  app.use(session({
+    name: 'mytasks.sid',
+    secret: resolveSessionSecret(),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    },
+  }));
+  app.use(tokenMiddleware);
+  app.use(verifyOnPost);
+  app.use(flashMiddleware);
+
   app.use('/', require('./routes/index'));
+  app.use('/tasks', require('./routes/tasks'));
 
   return app;
 }
