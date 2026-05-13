@@ -42,6 +42,7 @@ Any other value is rejected at the API boundary with `422 Unprocessable Entity`.
 | GET    | `/tasks`                   | List all tasks                | 200     | —                       |
 | GET    | `/tasks/{id}`              | Read one task                 | 200     | 400, 404                |
 | PATCH  | `/tasks/{id}/status`       | Update a task's status        | 200     | 400, 404, 422           |
+| PATCH  | `/tasks/{id}/due`          | Update a task's due date      | 200     | 400, 404, 422           |
 | DELETE | `/tasks/{id}`              | Delete a task                 | 204     | 400, 404                |
 
 There is no pagination. The list endpoint returns every task. This is intentional given the scope of the brief.
@@ -218,6 +219,70 @@ Returned for an unknown `status` value or a missing `status` field.
   "detail": "Request validation failed",
   "errors": [
     { "field": "status", "message": "value is not a valid enumeration member; permitted: 'todo', 'in_progress', 'done'" }
+  ]
+}
+```
+
+---
+
+### PATCH /tasks/{id}/due
+
+Update or clear the due date of a task. Pass `null` to remove the due date entirely.
+
+This endpoint is a documented widening beyond the original brief ("status is the only mutable field"). It exists so users can add a due date to a task they originally created without one, or push an existing due date forward, without having to delete-and-recreate.
+
+**Path parameters**
+
+- `id` — UUID v4.
+
+**Request — setting a due date**
+
+```json
+{ "due_at": "2026-05-20T09:00:00Z" }
+```
+
+**Request — clearing the due date**
+
+```json
+{ "due_at": null }
+```
+
+**Response — 200 OK**
+
+Returns the full updated task.
+
+```json
+{
+  "id": "8b1c9d3e-7f2a-4d6b-9e5c-1a2b3c4d5e6f",
+  "title": "Review case file CR-2026-0142",
+  "description": "Initial triage and assign to clerk.",
+  "status": "in_progress",
+  "due_at": "2026-05-20T09:00:00Z",
+  "created_at": "2026-05-12T14:30:00Z",
+  "updated_at": "2026-05-12T15:30:00Z"
+}
+```
+
+**Response — 400 Bad Request**
+
+Malformed UUID. Same shape as the `GET /tasks/{id}` 400.
+
+**Response — 404 Not Found**
+
+Same shape as the `GET /tasks/{id}` 404.
+
+**Response — 422 Unprocessable Entity**
+
+Returned when `due_at` is missing from the body or lacks a timezone offset.
+
+```json
+{
+  "type": "about:blank",
+  "title": "Unprocessable Entity",
+  "status": 422,
+  "detail": "Request validation failed",
+  "errors": [
+    { "field": "due_at", "message": "datetime must include a timezone offset" }
   ]
 }
 ```

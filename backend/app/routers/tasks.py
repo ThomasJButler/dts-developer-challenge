@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import get_session
 from app.exceptions import InvalidUUID
-from app.schemas.task import TaskCreate, TaskRead, TaskUpdateStatus
+from app.schemas.task import TaskCreate, TaskRead, TaskUpdateDue, TaskUpdateStatus
 from app.services import task as task_service
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -80,6 +80,22 @@ def update_status(
     """Change only the status of an existing task."""
     return task_service.update_status(  # type: ignore[return-value]
         session, _parse_uuid(task_id), data.status
+    )
+
+
+@router.patch(
+    "/{task_id}/due",
+    response_model=TaskRead,
+    summary="Update a task's due date",
+)
+def update_due(
+    task_id: str,
+    data: TaskUpdateDue,
+    session: SessionDep,
+) -> TaskRead:
+    """Change only the due date of an existing task. Pass `null` to clear."""
+    return task_service.update_due(  # type: ignore[return-value]
+        session, _parse_uuid(task_id), data.due_at
     )
 
 

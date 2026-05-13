@@ -8,6 +8,7 @@ Each service is the unit-of-work boundary: it owns the `session.commit()`
 call. The repository layer never commits.
 """
 
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -52,6 +53,19 @@ def update_status(session: Session, task_id: UUID, status: TaskStatus) -> Task:
     """Set the status on an existing task and return the updated row."""
     task = get_task(session, task_id)
     task.status = status
+    session.commit()
+    session.refresh(task)
+    return task
+
+
+def update_due(session: Session, task_id: UUID, due_at: datetime | None) -> Task:
+    """Set or clear the due date on an existing task and return it.
+
+    Mirrors `update_status`: fetch, mutate one field, commit, refresh.
+    Passing `None` clears the due date.
+    """
+    task = get_task(session, task_id)
+    task.due_at = due_at
     session.commit()
     session.refresh(task)
     return task
