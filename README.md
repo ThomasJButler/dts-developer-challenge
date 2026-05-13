@@ -21,7 +21,7 @@ I chose GOV.UK Frontend deliberately. My usual stack is React, Next.js and ShadC
 ## Running it
 
 ```bash
-git clone https://github.com/ThomasJButler/dts-developer-challenge.git
+git clone <repo-url>
 cd dts-developer-challenge
 cp .env.example .env
 docker compose up --build
