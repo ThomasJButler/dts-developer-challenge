@@ -15,10 +15,10 @@ Done when `docker compose up -d db` brings up Postgres and `docs/api.md` lists a
 
 ## integration-2, end-to-end smoke
 
-Branch: `feature/integration-smoke`. Depends on backend-3 and frontend-3.
+Branch: `feature/integration` (folded onto the existing integration branch rather than the originally-planned `feature/integration-smoke`). Depends on backend-3 and frontend-3.
 
-- [ ] `docker compose up` brings up db + backend + frontend, with the frontend reaching the backend over the compose network.
-- [ ] `docs/smoke.md` with a manual checklist: create, list, update, delete.
+- [x] `docker compose up` brings up db + backend + frontend, with the frontend reaching the backend over the compose network.
+- [x] `docs/smoke.md` with a manual checklist: create, list, update, delete.
 
 Done when a fresh clone followed by `docker compose up` lets you create a task in the browser and see it persist after a restart.
 

@@ -20,7 +20,50 @@ services:
       start_period: 10s
     restart: unless-stopped
 
-  # backend and frontend services are added in integration-2
+  backend:
+    build: ./backend
+    container_name: dts-tasks-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Compose-network hostname `db` resolves to the postgres container.
+      # The local-dev default in backend/app/config.py points at localhost,
+      # which is wrong inside the container — env wins.
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-tasks}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      # Uses python stdlib so the slim image needs no extra packages.
+      # /healthz exists per docs/api.md; it's a 200 with {"status":"ok"}.
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: dts-tasks-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      # `backend` is the compose-network hostname of the backend service.
+      API_BASE_URL: http://backend:8000
+      SESSION_SECRET: ${SESSION_SECRET:-dev-compose-session-secret}
+      PORT: "3000"
+      # Explicit development so the session middleware doesn't force
+      # secure cookies; the compose stack serves HTTP, not HTTPS.
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
 
 volumes:
   db_data:
