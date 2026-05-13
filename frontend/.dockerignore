@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+coverage/
+.nyc_output/
+test/
+design_handoff_manage_your_tasks/
+.git/
+Dockerfile
+.dockerignore
+eslint.config.mjs
