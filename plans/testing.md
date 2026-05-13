@@ -6,9 +6,9 @@ CI and the polish pass. Comes after both service test suites exist.
 
 Branch: `feature/testing-ci`. Depends on backend-4 and frontend-4.
 
-- [ ] `.github/workflows/ci.yml`: matrix with backend (ruff + pytest against a Postgres service container) and frontend (eslint + mocha).
-- [ ] Cache npm and pip.
-- [ ] Status badge in `README.md`.
+- [x] `.github/workflows/ci.yml`: matrix with backend (ruff + pytest against a Postgres service container) and frontend (eslint + mocha).
+- [x] Cache npm and pip.
+- [x] Status badge in `README.md`.
 
 Done when opening a PR runs both jobs and they go green.
 
