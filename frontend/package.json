@@ -20,7 +20,7 @@
     "express": "^4.19.2",
     "govuk-frontend": "^5.7.1",
     "nunjucks": "^3.2.4",
-    "undici": "^6.19.8"
+    "undici": "^6.24.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.10.0",
