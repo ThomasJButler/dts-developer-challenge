@@ -205,6 +205,83 @@ class TestPatchTaskStatus:
         assert any(err["field"] == "status" for err in response.json()["errors"])
 
 
+class TestPatchTaskDue:
+    """PATCH /tasks/{id}/due: happy path + error paths.
+
+    Mirrors `TestPatchTaskStatus`. Adds two extras specific to
+    datetimes: a naive-datetime 422 case (the `_require_aware`
+    validator) and a `null` clear case.
+    """
+
+    def test_sets_due_returns_full_task(self, client):
+        """Setting a due_at returns the updated task carrying the new value."""
+        created = client.post("/tasks", json={"title": "x"}).json()
+
+        response = client.patch(
+            f"/tasks/{created['id']}/due",
+            json={"due_at": "2099-12-20T09:00:00Z"},
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["id"] == created["id"]
+        assert body["due_at"] == "2099-12-20T09:00:00Z"
+
+    def test_clearing_with_null_sets_due_to_none(self, client):
+        """Passing null clears the due date."""
+        created = client.post(
+            "/tasks",
+            json={"title": "x", "due_at": "2099-12-20T09:00:00Z"},
+        ).json()
+        assert created["due_at"] == "2099-12-20T09:00:00Z"
+
+        response = client.patch(
+            f"/tasks/{created['id']}/due",
+            json={"due_at": None},
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["due_at"] is None
+
+    def test_unknown_id_returns_404(self, client):
+        """A well-formed UUID with no row returns 404."""
+        response = client.patch(
+            f"/tasks/{uuid4()}/due",
+            json={"due_at": None},
+        )
+        assert response.status_code == 404
+
+    def test_malformed_uuid_returns_400(self, client):
+        """A non-UUID path string returns 400."""
+        response = client.patch(
+            "/tasks/not-a-uuid/due",
+            json={"due_at": None},
+        )
+        assert response.status_code == 400
+
+    def test_naive_datetime_returns_422(self, client):
+        """A datetime without timezone offset returns 422 with a `due_at` field error."""
+        created = client.post("/tasks", json={"title": "x"}).json()
+
+        response = client.patch(
+            f"/tasks/{created['id']}/due",
+            json={"due_at": "2099-12-20T09:00:00"},
+        )
+
+        assert response.status_code == 422
+        assert any(err["field"] == "due_at" for err in response.json()["errors"])
+
+    def test_missing_due_at_returns_422(self, client):
+        """An empty body returns 422 with a `due_at` field error."""
+        created = client.post("/tasks", json={"title": "x"}).json()
+
+        response = client.patch(f"/tasks/{created['id']}/due", json={})
+
+        assert response.status_code == 422
+        assert any(err["field"] == "due_at" for err in response.json()["errors"])
+
+
 class TestDeleteTask:
     """DELETE /tasks/{id}: happy path + error paths."""
 

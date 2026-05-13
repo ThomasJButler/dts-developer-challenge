@@ -14,6 +14,14 @@ describe('GET /tasks', () => {
     expect(res.text).to.include('Create your first task');
   });
 
+  it('renders the intro paragraph microcopy verbatim', async () => {
+    const app = buildApp({ listTasks: async () => [] });
+    const res = await request(app).get('/tasks');
+    expect(res.text).to.include(
+      'Review and update the work items assigned to you. Tasks you create here are only visible to you.',
+    );
+  });
+
   it('renders each task title, status tag, and due date when the API returns tasks', async () => {
     const tasks = [
       {
@@ -62,6 +70,49 @@ describe('GET /tasks', () => {
     // because tasks exist.
     expect(res.text).to.include('Create a task');
     expect(res.text).to.not.include('You have no tasks yet.');
+  });
+
+  describe('a11y + responsive details', () => {
+    const tasks = [
+      {
+        id: 'CR-2026-0142',
+        title: 'Review case bundle',
+        description: '',
+        status: 'in_progress',
+        due_at: '2026-05-20T08:00:00Z',
+        created_at: '2026-05-08T09:12:00Z',
+        updated_at: '2026-05-11T14:02:00Z',
+      },
+    ];
+
+    it('sets data-label on each cell for the narrow-viewport stack-card fallback', async () => {
+      const app = buildApp({ listTasks: async () => tasks });
+      const res = await request(app).get('/tasks');
+      expect(res.text).to.include('data-label="Title"');
+      expect(res.text).to.include('data-label="Status"');
+      expect(res.text).to.include('data-label="Due date"');
+      expect(res.text).to.include('data-label="Actions"');
+    });
+
+    it('exposes the table caption to screen readers via govuk-visually-hidden', async () => {
+      const app = buildApp({ listTasks: async () => tasks });
+      const res = await request(app).get('/tasks');
+      // GOV.UK macro renders the caption as <caption class="govuk-table__caption govuk-visually-hidden">.
+      expect(res.text).to.match(/<caption[^>]*govuk-visually-hidden[^>]*>[^<]*Your tasks, 1 total/);
+    });
+
+    it("renders the task reference under the title with the GOV.UK hint style", async () => {
+      const app = buildApp({ listTasks: async () => tasks });
+      const res = await request(app).get('/tasks');
+      // The id appears under the title in a govuk-hint span.
+      expect(res.text).to.match(/<span class="govuk-hint[^"]*">\s*CR-2026-0142\s*<\/span>/);
+    });
+
+    it('gives the "View" link a unique accessible name via a visually-hidden ref suffix', async () => {
+      const app = buildApp({ listTasks: async () => tasks });
+      const res = await request(app).get('/tasks');
+      expect(res.text).to.match(/View<span class="govuk-visually-hidden"> CR-2026-0142<\/span>/);
+    });
   });
 
   it('renders rows in the handoff sort order (not-done first, due asc, done last)', async () => {

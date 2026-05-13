@@ -29,6 +29,36 @@ describe('/tasks create flow', () => {
       // CSRF hidden input is present.
       expect(extractCsrfToken(res.text)).to.have.length.greaterThan(10);
     });
+
+    it('marks the form as novalidate so the server owns validation messages', async () => {
+      const app = buildApp();
+      const res = await request(app).get('/tasks/new');
+      expect(res.text).to.match(/<form[^>]+action="\/tasks"[^>]+novalidate/);
+    });
+
+    it('links each input to its hint via aria-describedby', async () => {
+      const app = buildApp();
+      const res = await request(app).get('/tasks/new');
+      // Title input → title-hint.
+      expect(res.text).to.match(/id="title"[^>]*aria-describedby="[^"]*\btitle-hint\b/);
+      // Description textarea → description-hint.
+      expect(res.text).to.match(/id="description"[^>]*aria-describedby="[^"]*\bdescription-hint\b/);
+      // Each hint id is actually present in the document.
+      expect(res.text).to.include('id="title-hint"');
+      expect(res.text).to.include('id="description-hint"');
+    });
+
+    it('renders the field hints verbatim per the handoff microcopy', async () => {
+      const app = buildApp();
+      const res = await request(app).get('/tasks/new');
+      // Hints with quote marks come through Nunjucks autoescaped as &quot;.
+      expect(res.text).to.include(
+        'Use a short, specific description, for example &quot;Review bundle for CR-2026-0142&quot;.',
+      );
+      expect(res.text).to.include('Add any context that will help future you. You can leave this blank.');
+      expect(res.text).to.include('New tasks usually start as &quot;To do&quot;.');
+      expect(res.text).to.include('For example, 20 5 2026 at 09 00. Leave blank if there is no deadline.');
+    });
   });
 
   describe('POST /tasks', () => {
@@ -128,6 +158,59 @@ describe('/tasks create flow', () => {
       expect(postRes.text).to.include('I typed this and want it back');
       // Partially filled date values are preserved.
       expect(postRes.text).to.match(/name="due-day"\s+type="text"\s+value="20"/);
+    });
+
+    it('marks errored fields with the GOV.UK error class and links the error message id', async () => {
+      const app = buildApp({
+        createTask: async () => { throw new Error('createTask should not be called on validation failure'); },
+      });
+      const agent = request.agent(app);
+      const formRes = await agent.get('/tasks/new');
+      const token = extractCsrfToken(formRes.text);
+
+      const postRes = await agent
+        .post('/tasks')
+        .type('form')
+        .send({
+          _csrf: token,
+          title: '',
+          description: '',
+          status: '',
+          'due-day': '', 'due-month': '', 'due-year': '', 'due-hour': '', 'due-minute': '',
+        });
+
+      expect(postRes.status).to.equal(200);
+      // GOV.UK Frontend renders the class before id and does not emit
+      // aria-invalid; the error class + aria-describedby pointing at the
+      // error message id are the documented signal for screen readers.
+      expect(postRes.text).to.match(/class="[^"]*govuk-input--error[^"]*"\s+id="title"/);
+      expect(postRes.text).to.match(/id="title"[^>]*aria-describedby="[^"]*\btitle-error\b/);
+      // The error message element itself is present and addressable.
+      expect(postRes.text).to.include('id="title-error"');
+    });
+
+    it('prefixes inline error messages with a visually-hidden "Error:" span', async () => {
+      const app = buildApp({
+        createTask: async () => { throw new Error('createTask should not be called on validation failure'); },
+      });
+      const agent = request.agent(app);
+      const formRes = await agent.get('/tasks/new');
+      const token = extractCsrfToken(formRes.text);
+
+      const postRes = await agent
+        .post('/tasks')
+        .type('form')
+        .send({
+          _csrf: token,
+          title: '',
+          description: '',
+          status: '',
+          'due-day': '', 'due-month': '', 'due-year': '', 'due-hour': '', 'due-minute': '',
+        });
+
+      // Each inline error message includes a visually-hidden "Error:" prefix.
+      expect(postRes.text).to.match(/<span class="govuk-visually-hidden">Error:<\/span>\s*Enter a title/);
+      expect(postRes.text).to.match(/<span class="govuk-visually-hidden">Error:<\/span>\s*Select a status/);
     });
   });
 });

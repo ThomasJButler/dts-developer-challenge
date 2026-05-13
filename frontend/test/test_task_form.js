@@ -3,7 +3,7 @@
 const { expect } = require('chai');
 const { DateTime, Settings } = require('luxon');
 
-const { validateTaskForm, buildErrorSummary } = require('../app/lib/task-form');
+const { validateTaskForm, validateDue, buildErrorSummary } = require('../app/lib/task-form');
 
 // The date-validation rules ("today or in the future", "real date") are
 // time-sensitive. We pin Luxon's idea of "now" to a fixed instant for the
@@ -151,6 +151,32 @@ describe('validateTaskForm', () => {
     });
     expect(value.title).to.equal('Review case bundle');
     expect(value.description).to.equal('  Notes here  ');
+  });
+});
+
+describe('validateDue (exported standalone)', () => {
+  before(() => { Settings.now = () => FIXED_NOW_MILLIS; });
+  after(() => { Settings.now = () => Date.now(); });
+
+  it('accepts all-blank as a no-op clear', () => {
+    const result = validateDue({ day: '', month: '', year: '', hour: '', minute: '' });
+    expect(result).to.deep.equal({ error: null, iso: null });
+  });
+
+  it('converts a Europe/London input to a UTC ISO', () => {
+    const result = validateDue({
+      day: '20', month: '5', year: '2026', hour: '09', minute: '00',
+    });
+    expect(result.error).to.equal(null);
+    expect(result.iso).to.equal('2026-05-20T08:00:00.000Z');
+  });
+
+  it('rejects a date in the past', () => {
+    const result = validateDue({
+      day: '1', month: '1', year: '2026', hour: '09', minute: '00',
+    });
+    expect(result.error).to.equal('Due date must be today or in the future');
+    expect(result.iso).to.equal(null);
   });
 });
 

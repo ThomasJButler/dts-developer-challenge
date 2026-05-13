@@ -2,6 +2,8 @@
 
 {% from "govuk/components/back-link/macro.njk"           import govukBackLink %}
 {% from "govuk/components/button/macro.njk"              import govukButton %}
+{% from "govuk/components/date-input/macro.njk"          import govukDateInput %}
+{% from "govuk/components/error-summary/macro.njk"       import govukErrorSummary %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/radios/macro.njk"              import govukRadios %}
 {% from "govuk/components/summary-list/macro.njk"        import govukSummaryList %}
@@ -15,6 +17,13 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
+      {% if dueError %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: dueErrorSummary
+        }) }}
+      {% endif %}
+
       {% if flash.created %}
         {{ govukNotificationBanner({
           type: "success",
@@ -26,6 +35,12 @@
           type: "success",
           titleText: "Success",
           text: "Status updated"
+        }) }}
+      {% elif flash.dueUpdated %}
+        {{ govukNotificationBanner({
+          type: "success",
+          titleText: "Success",
+          text: "Due date updated"
         }) }}
       {% endif %}
 
@@ -61,6 +76,31 @@
         }) }}
 
         {{ govukButton({ text: "Save status" }) }}
+      </form>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <h2 class="govuk-heading-m">Update due date</h2>
+
+      <form method="post" action="/tasks/{{ task.id }}/due" novalidate>
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+        {{ govukDateInput({
+          id: "due",
+          namePrefix: "due",
+          fieldset: { legend: { text: "Due date and time", classes: "govuk-fieldset__legend--m govuk-visually-hidden" } },
+          hint: { text: "Leave all five fields blank to clear the due date. Format: 20 5 2026 at 09 00." },
+          errorMessage: dueError and { text: dueError },
+          items: [
+            { name: "day",    label: "Day",    classes: "govuk-input--width-2", value: dueValues.day },
+            { name: "month",  label: "Month",  classes: "govuk-input--width-2", value: dueValues.month },
+            { name: "year",   label: "Year",   classes: "govuk-input--width-4", value: dueValues.year },
+            { name: "hour",   label: "Hour",   classes: "govuk-input--width-2", value: dueValues.hour },
+            { name: "minute", label: "Minute", classes: "govuk-input--width-2", value: dueValues.minute }
+          ]
+        }) }}
+
+        {{ govukButton({ text: "Save due date" }) }}
       </form>
 
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">

@@ -18,6 +18,33 @@ function formatLondon(iso) {
   return dt.setZone(DISPLAY_ZONE).toFormat(DISPLAY_FORMAT);
 }
 
+const EMPTY_DUE_PARTS = Object.freeze({
+  day: '',
+  month: '',
+  year: '',
+  hour: '',
+  minute: '',
+});
+
+// Inverse of validateDue's ISO output: take a stored UTC due_at and
+// produce the five string parts the GOV.UK date-input expects, in
+// Europe/London. Used to pre-fill the edit form on the detail page so
+// the existing date is visible the moment the form renders.
+function splitDueParts(iso) {
+  if (!iso) return { ...EMPTY_DUE_PARTS };
+  const dt = DateTime.fromISO(iso, { zone: 'utc' });
+  if (!dt.isValid) return { ...EMPTY_DUE_PARTS };
+  const local = dt.setZone(DISPLAY_ZONE);
+  const pad2 = (n) => String(n).padStart(2, '0');
+  return {
+    day: pad2(local.day),
+    month: pad2(local.month),
+    year: String(local.year),
+    hour: pad2(local.hour),
+    minute: pad2(local.minute),
+  };
+}
+
 function presentTask(task) {
   const statusPresentation = STATUS_PRESENTATION[task.status] || {
     statusLabel: task.status,
@@ -51,4 +78,4 @@ function sortForList(tasks) {
   });
 }
 
-module.exports = { presentTask, sortForList, formatLondon };
+module.exports = { presentTask, sortForList, formatLondon, splitDueParts };

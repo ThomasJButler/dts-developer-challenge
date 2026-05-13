@@ -66,6 +66,26 @@ class TaskUpdateStatus(BaseModel):
     status: TaskStatus
 
 
+class TaskUpdateDue(BaseModel):
+    """Request body for PATCH /tasks/{id}/due.
+
+    Only the due date changes. Following the same single-purpose
+    discipline as `TaskUpdateStatus`: a separate schema rather than
+    widening one to accept arbitrary partial fields. The brief
+    originally fixed status as the only mutable field; this endpoint
+    is a documented widening to let users add or clear a due date on
+    an existing task without delete-and-recreate.
+    """
+
+    due_at: datetime | None
+
+    @field_validator("due_at")
+    @classmethod
+    def _due_at_must_be_aware(cls, value: datetime | None) -> datetime | None:
+        """Bind `_require_aware` to the `due_at` field for Pydantic."""
+        return _require_aware(value)
+
+
 class TaskRead(BaseModel):
     """Response body for any endpoint returning a task.
 

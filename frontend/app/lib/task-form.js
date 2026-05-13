@@ -91,4 +91,4 @@ function buildErrorSummary(errors) {
     .map((field) => ({ text: errors[field], href: FIELD_ANCHORS[field] }));
 }
 
-module.exports = { validateTaskForm, buildErrorSummary, STATUS_VALUES };
+module.exports = { validateTaskForm, validateDue, buildErrorSummary, STATUS_VALUES };

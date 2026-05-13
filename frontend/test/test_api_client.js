@@ -233,6 +233,68 @@ describe('api-client', () => {
     });
   });
 
+  describe('updateTaskDue', () => {
+    it('PATCHes /tasks/:id/due with the new ISO and returns the task', async () => {
+      const updated = { id: 'task-abc', title: 'Read', status: 'todo', due_at: '2026-05-20T08:00:00Z' };
+      const fetchFn = recordingFetch(fakeResponse({ status: 200, body: updated }));
+      const client = createApiClient({ baseUrl: 'http://api.test', fetchImpl: fetchFn });
+
+      const result = await client.updateTaskDue('task-abc', '2026-05-20T08:00:00Z');
+
+      expect(result).to.deep.equal(updated);
+      expect(fetchFn.calls[0].url).to.equal('http://api.test/tasks/task-abc/due');
+      expect(fetchFn.calls[0].options.method).to.equal('PATCH');
+      expect(JSON.parse(fetchFn.calls[0].options.body)).to.deep.equal({
+        due_at: '2026-05-20T08:00:00Z',
+      });
+    });
+
+    it('sends due_at: null to clear', async () => {
+      const updated = { id: 'task-abc', title: 'Read', status: 'todo', due_at: null };
+      const fetchFn = recordingFetch(fakeResponse({ status: 200, body: updated }));
+      const client = createApiClient({ baseUrl: 'http://api.test', fetchImpl: fetchFn });
+
+      await client.updateTaskDue('task-abc', null);
+
+      expect(JSON.parse(fetchFn.calls[0].options.body)).to.deep.equal({ due_at: null });
+    });
+
+    it('throws ValidationError on 422 for a naive datetime', async () => {
+      const errBody = {
+        type: 'about:blank',
+        title: 'Unprocessable Entity',
+        status: 422,
+        detail: 'Request validation failed',
+        errors: [{ field: 'due_at', message: 'datetime must include a timezone offset' }],
+      };
+      const fetchFn = recordingFetch(fakeResponse({ status: 422, body: errBody }));
+      const client = createApiClient({ baseUrl: 'http://api.test', fetchImpl: fetchFn });
+
+      let thrown;
+      try {
+        await client.updateTaskDue('task-abc', '2026-05-20T08:00:00');
+      } catch (e) {
+        thrown = e;
+      }
+      expect(thrown).to.be.an.instanceof(ValidationError);
+      expect(thrown.errors).to.deep.equal(errBody.errors);
+    });
+
+    it('throws NotFoundError on 404', async () => {
+      const errBody = { type: 'about:blank', title: 'Not Found', status: 404, detail: 'gone' };
+      const fetchFn = recordingFetch(fakeResponse({ status: 404, body: errBody }));
+      const client = createApiClient({ baseUrl: 'http://api.test', fetchImpl: fetchFn });
+
+      let thrown;
+      try {
+        await client.updateTaskDue('task-abc', '2026-05-20T08:00:00Z');
+      } catch (e) {
+        thrown = e;
+      }
+      expect(thrown).to.be.an.instanceof(NotFoundError);
+    });
+  });
+
   describe('deleteTask', () => {
     it('DELETEs /tasks/:id and returns null on 204', async () => {
       const fetchFn = recordingFetch(fakeResponse({ status: 204, body: null }));
