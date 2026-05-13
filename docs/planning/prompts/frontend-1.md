@@ -4,31 +4,31 @@ Copy everything below the divider into a fresh Claude Code session at the repo r
 
 ---
 
-You're picking up work on the DTS task-management build — the frontend trunk starts here. Before writing a single line of code, you have a **research phase** to do. The design handoff is the source of truth for look, copy, validation, and interaction. Skipping it will cause rework.
+You're picking up work on the DTS task-management build - the frontend trunk starts here. Before writing a single line of code, you have a **research phase** to do. The design handoff is the source of truth for look, copy, validation, and interaction. Skipping it will cause rework.
 
 ## Phase 0: Reading
 
 In this order:
 
-1. `README.md` — the brief.
+1. `README.md` - the brief.
 2. `PLAN.md` and `plans/overview.md`.
-3. `plans/frontend.md` — focus on `frontend-1`, but skim the later tasks so you know what's coming.
-4. `docs/api.md` — background; `frontend-1` itself does not call the API.
+3. `plans/frontend.md` - focus on `frontend-1`, but skim the later tasks so you know what's coming.
+4. `docs/api.md` - background; `frontend-1` itself does not call the API.
 5. `CLAUDE.md` if present locally.
-6. The full backend writeup, if `docs/internal/backend-writeup.md` exists locally — it explains the API contract you'll integrate against in later tasks.
+6. The full backend writeup, if `docs/internal/backend-writeup.md` exists locally - it explains the API contract you'll integrate against in later tasks.
 
 ## Phase 1: Design research (mandatory, do not skip)
 
-The design handoff lives at `frontend/design_handoff_manage_your_tasks/`. Treat it as the visual and behavioural specification — your job across the frontend trunk is to recreate it faithfully in Express + Nunjucks + GOV.UK Frontend.
+The design handoff lives at `docs/design-handoff/`. Treat it as the visual and behavioural specification - your job across the frontend trunk is to recreate it faithfully in Express + Nunjucks + GOV.UK Frontend.
 
 Read every file. In this order:
 
-1. `frontend/design_handoff_manage_your_tasks/README.md` — the handoff overview: stack, routes, task model, what's in and out of scope. **Read this first, in full.**
-2. `frontend/design_handoff_manage_your_tasks/spec.html` — the primary build reference. Annotated Nunjucks for every screen, rationale per choice, full UK English microcopy, accessibility checklist, out-of-scope list. Open it in a browser if it's easier to read rendered than as source.
-3. `frontend/design_handoff_manage_your_tasks/index.html` — landing page; gives the lay of the bundle.
-4. `frontend/design_handoff_manage_your_tasks/prototype.html` and `prototype.js` — clickable prototype. **Do not port the JavaScript.** It exists only so a human can click through. The toolbar at the top toggles empty/error/success states.
-5. `frontend/design_handoff_manage_your_tasks/sample_data.json` — fixtures the prototype uses. Worth a look so the test data in any local seed matches what designers had in mind.
-6. `frontend/design_handoff_manage_your_tasks/screenshots/*.png` — read these too. Seven screens (list, empty list, create form, create with errors, detail, detail with success banner, delete confirmation). Use the Read tool on each PNG.
+1. `docs/design-handoff/README.md` - the handoff overview: stack, routes, task model, what's in and out of scope. **Read this first, in full.**
+2. `docs/design-handoff/spec.html` - the primary build reference. Annotated Nunjucks for every screen, rationale per choice, full UK English microcopy, accessibility checklist, out-of-scope list. Open it in a browser if it's easier to read rendered than as source.
+3. `docs/design-handoff/index.html` - landing page; gives the lay of the bundle.
+4. `docs/design-handoff/prototype.html` and `prototype.js` - clickable prototype. **Do not port the JavaScript.** It exists only so a human can click through. The toolbar at the top toggles empty/error/success states.
+5. `docs/design-handoff/sample_data.json` - fixtures the prototype uses. Worth a look so the test data in any local seed matches what designers had in mind.
+6. `docs/design-handoff/screenshots/*.png` - read these too. Seven screens (list, empty list, create form, create with errors, detail, detail with success banner, delete confirmation). Use the Read tool on each PNG.
 
 As you read, write a short summary back to the user covering:
 
@@ -62,7 +62,7 @@ Exactly the checklist in `plans/frontend.md` under `frontend-1`, calibrated to w
 - Express app with Nunjucks resolving the `govuk-frontend` templates from `node_modules`.
 - GOV.UK CSS/JS/assets served statically from `govuk-frontend/dist/govuk/assets`. Pre-built dist over Sass unless the handoff requires custom SCSS (it shouldn't).
 - Base layout extending `govuk/template.njk`, with the header, footer, and service name **exactly as the design specifies** (including any plain-black-header deviation the spec calls out).
-- A landing route (`GET /`) that either redirects to `/tasks` or renders a trivial page — whichever matches the handoff. If the handoff is silent, a redirect to `/tasks` is the safe default; the real list view ships in `frontend-3`.
+- A landing route (`GET /`) that either redirects to `/tasks` or renders a trivial page - whichever matches the handoff. If the handoff is silent, a redirect to `/tasks` is the safe default; the real list view ships in `frontend-3`.
 
 Things `frontend-1` does **not** include: the API client (that's `frontend-2`), any of the seven task screens themselves (that's `frontend-3`), CSRF, flash messages, session middleware. If reading the handoff convinces you something needs to move earlier, raise it with the user during the Phase 1 summary rather than smuggling it in here.
 

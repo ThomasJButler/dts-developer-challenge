@@ -15,10 +15,10 @@ The DTS task-management build, split across four trunks of work. Each trunk has 
 
 ```text
 main
-├── integration/  docker-compose, OpenAPI contract, end-to-end wiring   → plans/integration.md
-├── backend/      API, DB, migrations, validation, tests                → plans/backend.md
-├── frontend/     Express+Nunjucks UI, GOV.UK styling, API client       → plans/frontend.md
-└── testing/      coverage, edge cases, CI                              → plans/testing.md
+├── integration/  docker-compose, OpenAPI contract, end-to-end wiring   → docs/planning/integration.md
+├── backend/      API, DB, migrations, validation, tests                → docs/planning/backend.md
+├── frontend/     Express+Nunjucks UI, GOV.UK styling, API client       → docs/planning/frontend.md
+└── testing/      coverage, edge cases, CI                              → docs/planning/testing.md
 ```
 
 ## Order of work
@@ -35,8 +35,8 @@ One branch per task, `feature/<trunk>-<slug>`. Merge into `main` via PR. Tick th
 
 ## Whole project, done when
 
-- [ ] All five backend endpoints implemented, tested, and documented.
-- [ ] Frontend covers create, view, update-status, and delete with GOV.UK styling.
-- [ ] `docker compose up` brings up the full stack from a clean clone.
-- [ ] CI green on `main`.
-- [ ] README explains how to run, how to test, and what was built.
+- [x] All five backend endpoints implemented, tested, and documented.
+- [x] Frontend covers create, view, update-status, and delete with GOV.UK styling.
+- [x] `docker compose up` brings up the full stack from a clean clone.
+- [x] CI green on `main`.
+- [x] README explains how to run, how to test, and what was built.

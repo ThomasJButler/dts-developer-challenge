@@ -6,11 +6,11 @@ Copy everything below the divider into a fresh Claude Code session at the repo r
 
 You're picking up work on the DTS task-management build. Before doing anything else, read:
 
-1. `README.md` — the brief.
-2. `PLAN.md` and `plans/overview.md` — project shape, stack, branch naming.
-3. `plans/backend.md` — focus on `backend-1`.
-4. `docs/api.md` — the API contract you'll need to honour.
-5. `CLAUDE.md` if present locally — especially the layering rules.
+1. `README.md` - the brief.
+2. `PLAN.md` and `plans/overview.md` - project shape, stack, branch naming.
+3. `plans/backend.md` - focus on `backend-1`.
+4. `docs/api.md` - the API contract you'll need to honour.
+5. `CLAUDE.md` if present locally - especially the layering rules.
 
 Prerequisite: `integration-1` must be merged. If it isn't, stop and report.
 
@@ -29,7 +29,7 @@ Exactly the checklist in `plans/backend.md` under `backend-1`:
 - `backend/requirements.txt` (FastAPI, uvicorn, SQLAlchemy, psycopg[binary], Alembic, Pydantic, python-dotenv) and `backend/requirements-dev.txt` (pytest, httpx, ruff).
 - `app/main.py` exposing `GET /healthz` returning `{"status": "ok"}`.
 - `app/db/session.py` with engine and session factory; `app/config.py` reading `DATABASE_URL`.
-- Alembic initialised under `backend/migrations/` — empty initial migration is fine, just prove the wiring.
+- Alembic initialised under `backend/migrations/` - empty initial migration is fine, just prove the wiring.
 
 ## TDD discipline
 

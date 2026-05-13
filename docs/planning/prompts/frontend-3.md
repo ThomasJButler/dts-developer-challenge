@@ -6,10 +6,10 @@ Copy everything below the divider into a fresh Claude Code session at the repo r
 
 You're picking up work on the DTS task-management build. Before doing anything else, read:
 
-1. `README.md` — the brief.
+1. `README.md` - the brief.
 2. `PLAN.md` and `plans/overview.md`.
-3. `plans/frontend.md` — focus on `frontend-3`. Note the GOV.UK error-summary accessibility rule in the Notes section.
-4. `docs/api.md` — the contract.
+3. `plans/frontend.md` - focus on `frontend-3`. Note the GOV.UK error-summary accessibility rule in the Notes section.
+4. `docs/api.md` - the contract.
 5. `CLAUDE.md` if present locally.
 
 Prerequisite: `frontend-2` merged.
@@ -34,7 +34,7 @@ Exactly the checklist in `plans/frontend.md` under `frontend-3`:
 
 ## TDD discipline
 
-One route at a time, test first. Use Supertest against the Express app with the API client mocked (`frontend-2`'s client gets stubbed via a module mock or DI — keep it consistent).
+One route at a time, test first. Use Supertest against the Express app with the API client mocked (`frontend-2`'s client gets stubbed via a module mock or DI - keep it consistent).
 
 1. Test `GET /tasks` with the client stubbed to return an empty list: response 200, renders the "no tasks yet" empty state. Implement, green.
 2. Test `GET /tasks` with the client stubbed to return three tasks: response includes each title, each status as a tag, each due date in Europe/London. Implement, green.

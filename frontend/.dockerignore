@@ -4,7 +4,7 @@ node_modules/
 coverage/
 .nyc_output/
 test/
-design_handoff_manage_your_tasks/
+tests/
 .git/
 Dockerfile
 .dockerignore

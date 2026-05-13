@@ -114,7 +114,7 @@ An empty list is still a 200 with `[]`, never a 404.
 
 ## `PATCH /tasks/{id}/status`
 
-Only the `status` field can change. Status transitions are validated by the enum, not by a state-machine — any known status can move to any other.
+Only the `status` field can change. Status transitions are validated by the enum, not by a state-machine - any known status can move to any other.
 
 ```text
 Client      Router            Service              Repository           DB

@@ -6,7 +6,7 @@ A small internal tool for HMCTS caseworkers to manage their own work items. Sing
 
 ## About the design files
 
-The files in this bundle are **design references created in HTML** — clickable prototypes showing intended look and behaviour, plus an annotated design specification. They are **not production code to copy directly**.
+The files in this bundle are **design references created in HTML** - clickable prototypes showing intended look and behaviour, plus an annotated design specification. They are **not production code to copy directly**.
 
 The production target is fixed by the brief:
 
@@ -15,7 +15,7 @@ The production target is fixed by the brief:
 - **No React, no Vue, no client-side router.** Progressive enhancement only. Forms POST to URLs and the server returns full HTML.
 - **WCAG 2.2 AA** minimum.
 
-Your task is to recreate the designs in that environment using the GOV.UK Frontend macros. `spec.html` already contains annotated Nunjucks for every screen — that is your starting point. The vanilla-JS prototype exists only so you can interact with the design; do not port the JavaScript.
+Your task is to recreate the designs in that environment using the GOV.UK Frontend macros. `spec.html` already contains annotated Nunjucks for every screen - that is your starting point. The vanilla-JS prototype exists only so you can interact with the design; do not port the JavaScript.
 
 ## Fidelity
 
@@ -133,7 +133,7 @@ For each screen, the annotated Nunjucks is in `spec.html`. The bullet points bel
 - Back link to the task, caption `Task CR-2026-0142`, H1 `Are you sure you want to delete this task?`, body paragraph explaining permanence.
 - `govuk-button-group` with `Yes, delete this task` (`govuk-button--warning`, submits `POST /tasks/:id/delete`) and `No, keep this task` link back to the detail page.
 
-This page exists to satisfy WCAG 2.2 SC 3.3.4 (Error Prevention for legal, financial, data) — a single-step delete from the detail page does not meet the criterion.
+This page exists to satisfy WCAG 2.2 SC 3.3.4 (Error Prevention for legal, financial, data) - a single-step delete from the detail page does not meet the criterion.
 
 ## Validation rules and messages
 
@@ -189,9 +189,9 @@ delete req.session.flash;
 
 Flag names this design assumes:
 
-- `flash.created` — set by `POST /tasks` redirect, consumed by detail page.
-- `flash.statusUpdated` — set by `POST /tasks/:id/status` redirect, consumed by detail page.
-- `flash.deleted` — set by `POST /tasks/:id/delete` redirect, consumed by list page.
+- `flash.created` - set by `POST /tasks` redirect, consumed by detail page.
+- `flash.statusUpdated` - set by `POST /tasks/:id/status` redirect, consumed by detail page.
+- `flash.deleted` - set by `POST /tasks/:id/delete` redirect, consumed by list page.
 
 ## CSRF
 
@@ -213,7 +213,7 @@ Do not build any of these. If a story asks for one later, treat it as a new desi
 
 ## Fixtures
 
-Use `sample_data.json` for your dev seed. All references are fictional (`CR-2026-0142` style). No real names, no real emails, no real photos anywhere — ever.
+Use `sample_data.json` for your dev seed. All references are fictional (`CR-2026-0142` style). No real names, no real emails, no real photos anywhere - ever.
 
 ## Open question for the team
 

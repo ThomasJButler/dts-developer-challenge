@@ -21,7 +21,7 @@ Format: status, decision, rationale, consequences.
 
 **Consequences:**
 
-- We commit to Pydantic v2 as the data contract layer everywhere — schemas, settings, config. Worth it; Pydantic v2 is fast and battle-tested.
+- We commit to Pydantic v2 as the data contract layer everywhere - schemas, settings, config. Worth it; Pydantic v2 is fast and battle-tested.
 - FastAPI's dependency injection is the only DI mechanism we use; no `wired`, no manual factories.
 
 ---
@@ -42,7 +42,7 @@ Format: status, decision, rationale, consequences.
 **Consequences:**
 
 - If a future feature needs async (long-polling, server-sent events), we revisit. For now everything is sync.
-- We don't expose `async def` routes — they would silently block the event loop without async I/O underneath.
+- We don't expose `async def` routes - they would silently block the event loop without async I/O underneath.
 
 ---
 
