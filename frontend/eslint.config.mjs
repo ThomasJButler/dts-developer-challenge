@@ -7,9 +7,6 @@ export default [
       'node_modules/**',
       'public/**',
       'coverage/**',
-      // Design-reference bundle: handed off from design as throw-away HTML/JS.
-      // It runs in a browser, not Node, so the CJS/Node rules below don't apply.
-      'design_handoff_manage_your_tasks/**',
       // Playwright artefacts. The HTML report contains generated JS that
       // lints noisily and shouldn't be inspected.
       'playwright-report/**',

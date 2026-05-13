@@ -6,9 +6,9 @@ Copy everything below the divider into a fresh Claude Code session at the repo r
 
 You're picking up work on the DTS task-management build. Before doing anything else, read:
 
-1. `README.md` — the original brief, immutable requirements.
-2. `PLAN.md` and `plans/overview.md` — project shape, stack, branch naming.
-3. `plans/integration.md` — the trunk you're working on. Focus on `integration-1`.
+1. `README.md` - the original brief, immutable requirements.
+2. `PLAN.md` and `plans/overview.md` - project shape, stack, branch naming.
+3. `plans/integration.md` - the trunk you're working on. Focus on `integration-1`.
 4. `CLAUDE.md` if present locally (gitignored personal notes; safe to use if it's there).
 
 Then implement `integration-1` exactly as listed in `plans/integration.md`. Do not start any other task. Do not scaffold the backend or frontend services in this branch.

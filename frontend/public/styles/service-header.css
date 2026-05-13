@@ -2,7 +2,7 @@
  * Plain black service header used in place of the default govukHeader.
  * Chosen by the design because this is an internal HMCTS tool, not a page
  * on gov.uk, so it does not carry the GOV.UK crown or wordmark.
- * Values mirror frontend/design_handoff_manage_your_tasks/spec.html.
+ * Values mirror docs/design-handoff/spec.html.
  */
 
 .service-header {

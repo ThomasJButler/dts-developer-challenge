@@ -6,9 +6,9 @@ Copy everything below the divider into a fresh Claude Code session at the repo r
 
 You're picking up work on the DTS task-management build. Before doing anything else, read:
 
-1. `README.md` — the brief.
+1. `README.md` - the brief.
 2. `PLAN.md` and `plans/overview.md`.
-3. `plans/testing.md` — focus on `testing-1`.
+3. `plans/testing.md` - focus on `testing-1`.
 4. `CLAUDE.md` if present locally.
 
 Prerequisites: `backend-4` and `frontend-4` merged. Both test suites must exist and be green locally.
@@ -39,7 +39,7 @@ CI config has no unit-test surface. Verify by pushing the branch and watching th
 2. Open the PR.
 3. CI runs. Both jobs should be green on the first push that's actually correct; iterate on the yaml if not.
 
-If you want a fast local check before pushing, run `act` (the local-actions runner) — but if it's not already installed, don't add a dependency just for this.
+If you want a fast local check before pushing, run `act` (the local-actions runner) - but if it's not already installed, don't add a dependency just for this.
 
 ## Anonymity
 

@@ -4,9 +4,9 @@ A snapshot of how the FastAPI service is assembled. Read this before changing th
 
 The companion documents:
 
-- [`request-flow.md`](request-flow.md) — what happens during a single HTTP request.
-- [`data-model.md`](data-model.md) — the Task entity, validation rules, schema.
-- [`decisions.md`](decisions.md) — short ADRs explaining why we picked each major piece.
+- [`request-flow.md`](request-flow.md) - what happens during a single HTTP request.
+- [`data-model.md`](data-model.md) - the Task entity, validation rules, schema.
+- [`decisions.md`](decisions.md) - short ADRs explaining why we picked each major piece.
 
 ## File tree
 
@@ -42,7 +42,7 @@ backend/
 
 ## Layers
 
-The backend is split into four layers. Each layer has a single responsibility, and imports flow strictly downward — never up.
+The backend is split into four layers. Each layer has a single responsibility, and imports flow strictly downward - never up.
 
 ```text
 ┌───────────────────────────────────────────────────────────┐

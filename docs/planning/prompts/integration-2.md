@@ -6,10 +6,10 @@ Copy everything below the divider into a fresh Claude Code session at the repo r
 
 You're picking up work on the DTS task-management build. Before doing anything else, read:
 
-1. `README.md` — the original brief.
+1. `README.md` - the original brief.
 2. `PLAN.md` and `plans/overview.md`.
-3. `plans/integration.md` — focus on `integration-2`.
-4. `docs/api.md` — the API contract.
+3. `plans/integration.md` - focus on `integration-2`.
+4. `docs/api.md` - the API contract.
 5. `CLAUDE.md` if present locally.
 
 Then implement `integration-2`. Prerequisites: `backend-3` and `frontend-3` must already be merged. If they aren't, stop and report.

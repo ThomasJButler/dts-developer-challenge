@@ -22,7 +22,7 @@ Expect, in order:
 2. `dts-tasks-backend` runs `alembic upgrade head`, then `uvicorn` reports `Application startup complete` on port 8000. Healthcheck flips to `(healthy)`.
 3. `dts-tasks-frontend` logs `Manage your tasks listening on http://localhost:3000`.
 
-`docker compose ps` should show three containers, two `(healthy)` (the third has no healthcheck on purpose — the backend dependency is the gate).
+`docker compose ps` should show three containers, two `(healthy)` (the third has no healthcheck on purpose - the backend dependency is the gate).
 
 ## Walk the CRUD flow
 
@@ -57,7 +57,7 @@ Open http://localhost:3000 in a browser.
     ```bash
     docker compose up
     ```
-14. Browse to `/tasks`. The task you created in step 11 is still there. (If it is not, the `db_data` named volume has been clobbered — re-check that `docker compose down -v` was not run.)
+14. Browse to `/tasks`. The task you created in step 11 is still there. (If it is not, the `db_data` named volume has been clobbered - re-check that `docker compose down -v` was not run.)
 
 ## Health checks
 
@@ -81,6 +81,6 @@ docker compose down -v    # removes the db_data volume too
 ## Common smoke failures
 
 - **`address already in use` on `docker compose up`.** A local Postgres on 5432, a local uvicorn on 8000, or `npm run dev` on 3000 is still running. Stop them or change the host-side port mapping in `docker-compose.yml`.
-- **Backend container exits immediately with `connection refused` against `db:5432`.** The healthcheck on `db` did not pass before `backend` started. Check `docker compose logs db` — the disk volume may be corrupt; `docker compose down -v` and retry.
+- **Backend container exits immediately with `connection refused` against `db:5432`.** The healthcheck on `db` did not pass before `backend` started. Check `docker compose logs db` - the disk volume may be corrupt; `docker compose down -v` and retry.
 - **Frontend renders but `/tasks` shows a generic error.** The frontend cannot reach `http://backend:8000`. Confirm `docker compose ps` shows the backend `(healthy)` and that `API_BASE_URL` in the frontend service is `http://backend:8000`, not `http://localhost:8000`.
 - **`Module not found` on frontend startup.** Image was built before `package.json` changed. Force-rebuild: `docker compose build --no-cache frontend`.

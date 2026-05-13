@@ -4,7 +4,7 @@ Live as of `backend-2`. The `Task` SQLAlchemy model is in [`backend/app/db/model
 
 ## Tables (current)
 
-Only one table for this brief. The system has no users, no audit log, no soft delete, and no separate status table — the status enum lives in code and in the Postgres type system.
+Only one table for this brief. The system has no users, no audit log, no soft delete, and no separate status table - the status enum lives in code and in the Postgres type system.
 
 ### `tasks`
 
@@ -86,6 +86,6 @@ Naive datetimes (no offset) are rejected at the API edge with 422. This stops a 
 
 Out of scope for this brief but listed here so the model decisions don't paint anyone into a corner:
 
-- **Assigned-to user** — adding a `users` table and an FK on `tasks` is straightforward; the `id` columns would migrate cleanly.
-- **Multiple statuses per task** — would need a join table. Current single-column status is fine for the brief.
-- **Soft delete** — add a nullable `deleted_at` column. Routes would filter it out. Not done because the brief asks for hard delete.
+- **Assigned-to user** - adding a `users` table and an FK on `tasks` is straightforward; the `id` columns would migrate cleanly.
+- **Multiple statuses per task** - would need a join table. Current single-column status is fine for the brief.
+- **Soft delete** - add a nullable `deleted_at` column. Routes would filter it out. Not done because the brief asks for hard delete.

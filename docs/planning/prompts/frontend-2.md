@@ -6,10 +6,10 @@ Copy everything below the divider into a fresh Claude Code session at the repo r
 
 You're picking up work on the DTS task-management build. Before doing anything else, read:
 
-1. `README.md` — the brief.
+1. `README.md` - the brief.
 2. `PLAN.md` and `plans/overview.md`.
-3. `plans/frontend.md` — focus on `frontend-2`.
-4. `docs/api.md` — the API contract. The client must match it.
+3. `plans/frontend.md` - focus on `frontend-2`.
+4. `docs/api.md` - the API contract. The client must match it.
 5. `CLAUDE.md` if present locally.
 
 Prerequisites: `frontend-1` and `backend-3` merged. The client needs the contract to be stable.
@@ -34,13 +34,13 @@ Exactly the checklist in `plans/frontend.md` under `frontend-2`:
 
 One method at a time, test first.
 
-1. `frontend/test/test_api_client.js`: test that `createTask({title, ...})` POSTs to `/tasks` with a JSON body and returns the parsed response on 201. Mock fetch with `sinon` or a small inline stub — whatever you reach for, keep it consistent across tests. Run mocha; test fails because the method doesn't exist.
+1. `frontend/test/test_api_client.js`: test that `createTask({title, ...})` POSTs to `/tasks` with a JSON body and returns the parsed response on 201. Mock fetch with `sinon` or a small inline stub - whatever you reach for, keep it consistent across tests. Run mocha; test fails because the method doesn't exist.
 2. Implement `createTask`. Green.
 3. Test: `createTask` throws `ValidationError` carrying the response body on 422.
 4. Test: `createTask` throws `ApiError` on 500.
 5. Repeat for `getTask`, `listTasks`, `updateTaskStatus`, `deleteTask`. Each gets at least: happy path, error mapping for the relevant status codes.
 
-Cross-reference paths, methods, and bodies against `docs/api.md`. If anything doesn't match, the contract wins — fix the test and the client.
+Cross-reference paths, methods, and bodies against `docs/api.md`. If anything doesn't match, the contract wins - fix the test and the client.
 
 ## Anonymity
 

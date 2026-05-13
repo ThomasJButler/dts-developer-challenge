@@ -6,9 +6,9 @@ Copy everything below the divider into a fresh Claude Code session at the repo r
 
 You're picking up work on the DTS task-management build. Before doing anything else, read:
 
-1. `README.md` — the brief.
+1. `README.md` - the brief.
 2. `PLAN.md` and `plans/overview.md`.
-3. `plans/frontend.md` — focus on `frontend-4`.
+3. `plans/frontend.md` - focus on `frontend-4`.
 4. `CLAUDE.md` if present locally.
 
 Prerequisite: `frontend-3` merged.
