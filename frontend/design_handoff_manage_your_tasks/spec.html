@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en-GB" class="govuk-template">
+<head>
+<meta charset="utf-8">
+<title>Design spec - Manage your tasks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@5.7.1/dist/govuk/govuk-frontend.min.css">
+<style>
+  body { background: #ffffff; }
+  .service-header {
+    background: #0b0c0c;
+    border-bottom: 10px solid #1d70b8;
+  }
+  .service-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .service-header__name {
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.3;
+    text-decoration: none;
+  }
+  .service-header__meta {
+    color: #b1b4b6;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+  }
+
+  /* Two-column reading layout: content on the left, ToC on the right at desktop. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+  @media (min-width: 48.0625em) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr) 240px; }
+  }
+  .doc-toc {
+    position: sticky;
+    top: 20px;
+    align-self: start;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    border-left: 4px solid #b1b4b6;
+    padding: 10px 0 10px 15px;
+  }
+  .doc-toc h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 10px;
+    color: #505a5f;
+  }
+  .doc-toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .doc-toc li { margin-bottom: 8px; }
+  .doc-toc a { color: #1d70b8; text-decoration: underline; text-underline-offset: 0.1em; }
+
+  /* Code blocks for the annotated Nunjucks. */
+  .code-block {
+    background: #f3f2f1;
+    border-left: 4px solid #1d70b8;
+    padding: 15px 20px;
+    overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 15px 0 25px;
+    white-space: pre;
+    color: #0b0c0c;
+  }
+  .code-block .c { color: #6f777b; font-style: italic; } /* comment */
+  .code-block .k { color: #1d70b8; } /* keyword: macro name */
+  .code-block .s { color: #00703c; } /* string */
+  .code-block .t { color: #d4351c; } /* nunjucks tag delimiters */
+
+  /* Rationale callouts. */
+  .callout {
+    background: #f3f2f1;
+    padding: 15px 20px;
+    border-left: 10px solid #1d70b8;
+    margin: 20px 0 25px;
+  }
+  .callout h3 {
+    margin-top: 0;
+    font-size: 19px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* Microcopy table */
+  .copy-table th, .copy-table td {
+    vertical-align: top;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .copy-table td code {
+    background: #f3f2f1;
+    padding: 1px 4px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px;
+  }
+
+  /* Visual preview tile */
+  .preview-tile {
+    background: #f3f2f1;
+    padding: 20px;
+    border: 1px solid #b1b4b6;
+    margin: 20px 0 30px;
+  }
+  .preview-tile__label {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 14px;
+    color: #505a5f;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  /* Section break */
+  .section-rule { border: 0; border-top: 4px solid #0b0c0c; margin: 50px 0 30px; }
+</style>
+</head>
+<body class="govuk-template__body">
+<a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
+
+<header class="service-header" role="banner">
+  <div class="govuk-width-container">
+    <div class="service-header__inner">
+      <a href="prototype.html" class="service-header__name">Manage your tasks</a>
+      <span class="service-header__meta">Design spec</span>
+    </div>
+  </div>
+</header>
+
+<div class="govuk-width-container">
+  <main class="govuk-main-wrapper" id="main-content" role="main">
+
+    <span class="govuk-caption-l">HMCTS internal tool</span>
+    <h1 class="govuk-heading-xl">Design specification</h1>
+    <p class="govuk-body-l">A single-user task-management tool for HMCTS caseworkers, built on GOV.UK Frontend, server-rendered with Nunjucks and Express, with progressive enhancement only.</p>
+    <p class="govuk-body"><a class="govuk-link" href="prototype.html">Open the interactive prototype</a> to see these screens in their working states.</p>
+
+    <div class="doc-layout">
+      <div>
+
+        <!-- =========================================================== -->
+        <h2 class="govuk-heading-l" id="overview">1. Overview</h2>
+
+        <p class="govuk-body">The service has three screens and one confirmation page:</p>
+        <ol class="govuk-list govuk-list--number">
+          <li><a class="govuk-link" href="#screen-list">Task list</a> at <code>/tasks</code></li>
+          <li><a class="govuk-link" href="#screen-create">Create a task</a> at <code>/tasks/new</code></li>
+          <li><a class="govuk-link" href="#screen-detail">Task detail</a> at <code>/tasks/:id</code>, with the update-status form and the delete entry point</li>
+          <li><a class="govuk-link" href="#screen-delete">Delete confirmation</a> at <code>/tasks/:id/delete</code> (added because destructive actions need a confirmation step under WCAG 2.2 SC 3.3.4)</li>
+        </ol>
+
+        <p class="govuk-body">All forms POST to the same URL they were rendered from. The server validates, and either redirects to the next screen (303 See Other) or re-renders the form with errors. There is no client-side router, no XHR.</p>
+
+        <div class="callout">
+          <h3 class="govuk-heading-s">Why a confirmation page for delete?</h3>
+          <p class="govuk-body">A single-step delete from the detail page would meet the brief literally, but WCAG 2.2 SC 3.3.4 (Error Prevention for legal, financial, data) requires either reversibility, checking, or confirmation for actions that modify or delete user data. A separate confirmation page is the GOV.UK pattern and the lightest way to meet it. The warning button on the detail page links to the confirmation; the actual destructive POST is on that confirmation page.</p>
+        </div>
+
+        <hr class="section-rule">
+
+        <!-- =========================================================== -->
+        <h2 class="govuk-heading-l" id="screen-list">2. Task list</h2>
+        <p class="govuk-body govuk-!-font-weight-bold">Route: <code>GET /tasks</code></p>
+
+        <div class="preview-tile">
+          <div class="preview-tile__label">Preview</div>
+          <iframe src="prototype.html#/tasks" style="width: 100%; height: 540px; border: 1px solid #b1b4b6; background: #fff;" title="Task list preview"></iframe>
+        </div>
+
+        <h3 class="govuk-heading-m">Annotated Nunjucks</h3>
+        <div class="code-block">{% extends "layouts/main.njk" %}
+
+{% from "govuk/components/button/macro.njk"          import govukButton %}
+{% from "govuk/components/table/macro.njk"           import govukTable %}
+{% from "govuk/components/tag/macro.njk"             import govukTag %}
+{% from "govuk/components/inset-text/macro.njk"      import govukInsetText %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% set pageTitle = "Your tasks" %}
+
+{% block content %}
+  {# Success banner shown after a redirect from create / delete. #}
+  {% if flash.created %}
+    {{ govukNotificationBanner({
+      type: "success",
+      text: "Task created"
+    }) }}
+  {% elif flash.deleted %}
+    {{ govukNotificationBanner({
+      type: "success",
+      text: "Task deleted"
+    }) }}
+  {% endif %}
+
+  <div class="heading-row">
+    <h1 class="govuk-heading-xl">Your tasks</h1>
+    {% if tasks.length %}
+      {{ govukButton({
+        text: "Create a task",
+        href: "/tasks/new"
+      }) }}
+    {% endif %}
+  </div>
+
+  <p class="govuk-body-l">Review and update the work items assigned to you. Tasks you create here are only visible to you.</p>
+
+  {% if tasks.length == 0 %}
+    {# Empty state. govukInsetText is friendlier than a card and matches the
+       GOV.UK pattern for short prominent prose. #}
+    {{ govukInsetText({
+      html: '&lt;p class="govuk-body"&gt;You have no tasks yet.&lt;/p&gt;' +
+            '&lt;a class="govuk-button" href="/tasks/new" data-module="govuk-button"&gt;Create your first task&lt;/a&gt;'
+    }) }}
+  {% else %}
+    {# Build rows with macros so the tag colour is consistent everywhere. #}
+    {% set rows = [] %}
+    {% for t in tasks %}
+      {% set rows = (rows.push([
+        { html: '&lt;a class="govuk-link govuk-link--no-visited-state" href="/tasks/' + t.id + '"&gt;' + t.title + '&lt;/a&gt;' +
+                '&lt;span class="govuk-hint govuk-!-margin-bottom-0 govuk-!-font-size-16"&gt;' + t.id + '&lt;/span&gt;',
+          attributes: { "data-label": "Title" } },
+        { html: govukTag({ text: t.statusLabel, classes: t.statusTagClass }),
+          attributes: { "data-label": "Status" } },
+        { text: t.dueLabel or "Not set",
+          attributes: { "data-label": "Due date" } },
+        { html: '&lt;a class="govuk-link govuk-link--no-visited-state" href="/tasks/' + t.id + '"&gt;View&lt;span class="govuk-visually-hidden"&gt; ' + t.id + '&lt;/span&gt;&lt;/a&gt;',
+          attributes: { "data-label": "Actions" } }
+      ]), rows) %}
+    {% endfor %}
+
+    {{ govukTable({
+      caption: "Your tasks, " + tasks.length + " total",
+      captionClasses: "govuk-visually-hidden",
+      head: [
+        { text: "Title" },
+        { text: "Status" },
+        { text: "Due date" },
+        { text: "Actions" }
+      ],
+      rows: rows,
+      classes: "task-table"
+    }) }}
+  {% endif %}
+{% endblock %}</div>
+
+        <div class="callout">
+          <h3 class="govuk-heading-s">Rationale</h3>
+          <ul class="govuk-list govuk-list--bullet">
+            <li><strong>Table over card grid.</strong> A table scans faster for caseworkers comparing due dates and statuses across many items, which is the primary job. The table degrades to stacked, labelled blocks below 641px using a small CSS rule that hides the <code>&lt;thead&gt;</code> and shows <code>data-label</code> values via <code>::before</code>. The semantics stay table semantics, so screen readers still announce row and column relationships.</li>
+            <li><strong>Title is the link target.</strong> Following the GOV.UK pattern, the title cell is itself the link to the detail page. The explicit "View" link in the Actions column is a redundancy for users who scan to the right edge looking for an action - it carries a visually-hidden suffix with the reference so each link has a unique accessible name.</li>
+            <li><strong>Reference under the title.</strong> Case-style refs (CR-2026-0142) earn their place because that is how caseworkers cite work to colleagues. They sit as small grey hint text under the title, not as their own column, to keep the row scannable.</li>
+            <li><strong>Default sort.</strong> Not-done first, then by due date ascending, with no-date items last. This is the GOV.UK service-pattern default for "things I need to do". Sortable columns are explicitly out of scope.</li>
+            <li><strong>Create button placement.</strong> Top-right on the same row as the heading at desktop (the GOV.UK heading-row pattern); below the heading at mobile, on its own line, so the touch target is full-width and not crowded.</li>
+          </ul>
+        </div>
+
+        <hr class="section-rule">
+
+        <!-- =========================================================== -->
+        <h2 class="govuk-heading-l" id="screen-create">3. Create a task</h2>
+        <p class="govuk-body govuk-!-font-weight-bold">Routes: <code>GET /tasks/new</code> and <code>POST /tasks</code></p>
+
+        <div class="preview-tile">
+          <div class="preview-tile__label">Preview, with validation errors</div>
+          <iframe src="prototype.html#/tasks/new?errors=1" style="width: 100%; height: 740px; border: 1px solid #b1b4b6; background: #fff;" title="Create task preview, error state"></iframe>
+        </div>
+
+        <h3 class="govuk-heading-m">Annotated Nunjucks</h3>
+        <div class="code-block">{% extends "layouts/main.njk" %}
+
+{% from "govuk/components/back-link/macro.njk"      import govukBackLink %}
+{% from "govuk/components/input/macro.njk"          import govukInput %}
+{% from "govuk/components/textarea/macro.njk"       import govukTextarea %}
+{% from "govuk/components/radios/macro.njk"         import govukRadios %}
+{% from "govuk/components/date-input/macro.njk"     import govukDateInput %}
+{% from "govuk/components/button/macro.njk"         import govukButton %}
+{% from "govuk/components/error-summary/macro.njk"  import govukErrorSummary %}
+
+{% set pageTitle = (errors and "Error: " or "") + "Create a task" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({ text: "Back to your tasks", href: "/tasks" }) }}
+{% endblock %}
+
+{% block content %}
+  {# Error summary. Build list in field order so links jump in reading order. #}
+  {% if errors %}
+    {{ govukErrorSummary({
+      titleText: "There is a problem",
+      errorList: errorSummaryList  {# server prepares this in field order #}
+    }) }}
+  {% endif %}
+
+  <span class="govuk-caption-l">Tasks</span>
+  <h1 class="govuk-heading-l">Create a task</h1>
+
+  <form method="post" action="/tasks" novalidate>
+    {# CSRF token, hidden #}
+    &lt;input type="hidden" name="_csrf" value="{{ csrfToken }}"&gt;
+
+    {{ govukInput({
+      label: { text: "Title", classes: "govuk-label--m" },
+      hint:  { text: 'Use a short, specific description, for example "Review bundle for CR-2026-0142".' },
+      id: "title", name: "title",
+      value: values.title,
+      attributes: { maxlength: 255, autocomplete: "off" },
+      errorMessage: errors.title and { text: errors.title }
+    }) }}
+
+    {{ govukTextarea({
+      label: { text: "Description", classes: "govuk-label--m" },
+      hint:  { text: "Add any context that will help future you. You can leave this blank." },
+      id: "description", name: "description",
+      rows: 5,
+      value: values.description
+    }) }}
+
+    {{ govukRadios({
+      idPrefix: "status",
+      name: "status",
+      fieldset: { legend: { text: "Status", classes: "govuk-fieldset__legend--m" } },
+      hint: { text: 'New tasks usually start as "To do".' },
+      errorMessage: errors.status and { text: errors.status },
+      items: [
+        { value: "todo",        text: "To do",       checked: values.status == "todo" },
+        { value: "in_progress", text: "In progress", checked: values.status == "in_progress" },
+        { value: "done",        text: "Done",        checked: values.status == "done" }
+      ]
+    }) }}
+
+    {# Date and time pattern.
+       The GOV.UK date-input macro covers three fields (day/month/year). We
+       reuse the same visual pattern for hour/minute by appending two more
+       date-input items. Putting time alongside the date keeps it as one
+       fieldset and one error message, which is simpler for screen readers
+       than splitting into two fieldsets. #}
+    {{ govukDateInput({
+      id: "due",
+      namePrefix: "due",
+      fieldset: { legend: { text: "Due date and time (optional)", classes: "govuk-fieldset__legend--m" } },
+      hint: { text: "For example, 20 5 2026 at 09 00. Leave blank if there is no deadline." },
+      errorMessage: errors.due and { text: errors.due },
+      items: [
+        { name: "day",    label: "Day",    classes: "govuk-input--width-2", value: values.due.day },
+        { name: "month",  label: "Month",  classes: "govuk-input--width-2", value: values.due.month },
+        { name: "year",   label: "Year",   classes: "govuk-input--width-4", value: values.due.year },
+        { name: "hour",   label: "Hour",   classes: "govuk-input--width-2", value: values.due.hour },
+        { name: "minute", label: "Minute", classes: "govuk-input--width-2", value: values.due.minute }
+      ]
+    }) }}
+
+    <div class="govuk-button-group">
+      {{ govukButton({ text: "Save task" }) }}
+      <a class="govuk-link" href="/tasks">Cancel</a>
+    </div>
+  </form>
+{% endblock %}</div>
+
+        <div class="callout">
+          <h3 class="govuk-heading-s">Rationale</h3>
+          <ul class="govuk-list govuk-list--bullet">
+            <li><strong>Date + time as one fieldset.</strong> The brief offered two routes; this is the one I recommend. The GOV.UK <code>govukDateInput</code> macro accepts an <code>items</code> array, so the same visual pattern stretches to five inputs. A single legend, single hint, single error message. Two separate fieldsets would double the assistive-tech overhead for no extra clarity. The visual distinction between date and time is achieved with a small gap, not a new fieldset.</li>
+            <li><strong>Optional due date.</strong> Caseworkers have admin tasks with no real deadline. Making the field optional with "all blank or all filled" validation avoids a forced fake date.</li>
+            <li><strong>Status as radios, not a select.</strong> Three options. Radios are visible, faster to operate by keyboard, and consistent with the update-status form on the detail page.</li>
+            <li><strong>Preserving values on error.</strong> Every field reads from a <code>values</code> object provided by the controller after validation, so the user never re-types after a failure. The error summary lists errors in the same order as the form, and each summary link points at the first input id of the offending field, including <code>#due-day</code> for the date-time group (the date-input macro's documented anchor).</li>
+            <li><strong>Page title prefix.</strong> When there are errors, the <code>&lt;title&gt;</code> is prefixed with "Error: " per the GOV.UK pattern, so screen readers and tab titles announce the failure on page load.</li>
+            <li><strong>Cancel as a link.</strong> Cancel is navigation, not a destructive action, so it is a link not a button. Sits inside the <code>govuk-button-group</code> for spacing.</li>
+          </ul>
+        </div>
+
+        <hr class="section-rule">
+
+        <!-- =========================================================== -->
+        <h2 class="govuk-heading-l" id="screen-detail">4. Task detail</h2>
+        <p class="govuk-body govuk-!-font-weight-bold">Routes: <code>GET /tasks/:id</code> and <code>POST /tasks/:id/status</code></p>
+
+        <div class="preview-tile">
+          <div class="preview-tile__label">Preview, after a status change</div>
+          <iframe src="prototype.html#/tasks/CR-2026-0142?updated=1" style="width: 100%; height: 760px; border: 1px solid #b1b4b6; background: #fff;" title="Task detail preview"></iframe>
+        </div>
+
+        <h3 class="govuk-heading-m">Annotated Nunjucks</h3>
+        <div class="code-block">{% extends "layouts/main.njk" %}
+
+{% from "govuk/components/back-link/macro.njk"           import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk"        import govukSummaryList %}
+{% from "govuk/components/radios/macro.njk"              import govukRadios %}
+{% from "govuk/components/button/macro.njk"              import govukButton %}
+{% from "govuk/components/tag/macro.njk"                 import govukTag %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% set pageTitle = task.title %}
+
+{% block beforeContent %}
+  {{ govukBackLink({ text: "Back to your tasks", href: "/tasks" }) }}
+{% endblock %}
+
+{% block content %}
+  {% if flash.statusUpdated %}
+    {{ govukNotificationBanner({
+      type: "success",
+      titleText: "Success",
+      text: "Status updated"
+    }) }}
+  {% endif %}
+
+  <span class="govuk-caption-l">Task {{ task.id }}</span>
+  <h1 class="govuk-heading-l">{{ task.title }}</h1>
+
+  {{ govukSummaryList({
+    rows: [
+      { key: { text: "Reference" },   value: { text: task.id } },
+      { key: { text: "Status" },      value: { html: govukTag({ text: task.statusLabel, classes: task.statusTagClass }) } },
+      { key: { text: "Due" },         value: { text: task.dueLabel or "Not set" } },
+      { key: { text: "Description" }, value: { text: task.description or "Not set" } },
+      { key: { text: "Created" },     value: { text: task.createdLabel } },
+      { key: { text: "Last updated" },value: { text: task.updatedLabel } }
+    ]
+  }) }}
+
+  {# Self-contained status form. Posts to its own action; never combined
+     with the delete button to avoid accidental submission. #}
+  <form method="post" action="/tasks/{{ task.id }}/status" class="govuk-!-margin-top-8">
+    &lt;input type="hidden" name="_csrf" value="{{ csrfToken }}"&gt;
+
+    {{ govukRadios({
+      idPrefix: "status-update",
+      name: "status",
+      fieldset: { legend: { text: "Update status", classes: "govuk-fieldset__legend--m" } },
+      hint: { text: "Changing status saves immediately." },
+      items: [
+        { value: "todo",        text: "To do",       checked: task.status == "todo" },
+        { value: "in_progress", text: "In progress", checked: task.status == "in_progress" },
+        { value: "done",        text: "Done",        checked: task.status == "done" }
+      ]
+    }) }}
+
+    {{ govukButton({ text: "Save status" }) }}
+  </form>
+
+  <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+  <h2 class="govuk-heading-m">Delete this task</h2>
+  <p class="govuk-body">Deleting removes the task and its history. This cannot be undone.</p>
+
+  {{ govukButton({
+    text: "Delete this task",
+    href: "/tasks/" + task.id + "/delete",
+    classes: "govuk-button--warning"
+  }) }}
+{% endblock %}</div>
+
+        <div class="callout">
+          <h3 class="govuk-heading-s">Rationale</h3>
+          <ul class="govuk-list govuk-list--bullet">
+            <li><strong>Two separate forms on one page.</strong> The update-status form posts to <code>/tasks/:id/status</code> and the delete entry point links to <code>/tasks/:id/delete</code>. Keeping them separate prevents a misclick on Save from triggering anything destructive.</li>
+            <li><strong>Status form pre-selected to current value.</strong> Saving without changing the radio is a no-op for the user, but the controller still records an <code>updated_at</code> only if the value actually changed.</li>
+            <li><strong>Summary list for read-only fields.</strong> <code>govukSummaryList</code> is the right component for "facts about this thing", aligns labels and values, and reads correctly as a definition list.</li>
+            <li><strong>Time format.</strong> The brief calls for Europe/London display, format <em>D MMMM YYYY, HH:mm</em>. Both <code>dueLabel</code> and the audit timestamps use that format, so users never have to translate between UTC and London time.</li>
+            <li><strong>Warning button.</strong> The <code>govuk-button--warning</code> style is reserved for actions with unrecoverable consequences. It is a link styled as a button so it can use a GET to the confirmation page (the actual destructive POST is on the next page).</li>
+          </ul>
+        </div>
+
+        <hr class="section-rule">
+
+        <!-- =========================================================== -->
+        <h2 class="govuk-heading-l" id="screen-delete">5. Delete confirmation</h2>
+        <p class="govuk-body govuk-!-font-weight-bold">Routes: <code>GET /tasks/:id/delete</code> and <code>POST /tasks/:id/delete</code></p>
+
+        <div class="preview-tile">
+          <div class="preview-tile__label">Preview</div>
+          <iframe src="prototype.html#/tasks/CR-2026-0142/delete" style="width: 100%; height: 420px; border: 1px solid #b1b4b6; background: #fff;" title="Delete confirmation preview"></iframe>
+        </div>
+
+        <div class="code-block">{% extends "layouts/main.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk"    import govukButton %}
+
+{% set pageTitle = "Are you sure you want to delete this task?" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({ text: "Back to task", href: "/tasks/" + task.id }) }}
+{% endblock %}
+
+{% block content %}
+  <span class="govuk-caption-l">Task {{ task.id }}</span>
+  <h1 class="govuk-heading-l">Are you sure you want to delete this task?</h1>
+  <p class="govuk-body">The task will be permanently removed. You cannot undo this action.</p>
+
+  <form method="post" action="/tasks/{{ task.id }}/delete">
+    &lt;input type="hidden" name="_csrf" value="{{ csrfToken }}"&gt;
+    <div class="govuk-button-group">
+      {{ govukButton({ text: "Yes, delete this task", classes: "govuk-button--warning" }) }}
+      <a class="govuk-link" href="/tasks/{{ task.id }}">No, keep this task</a>
+    </div>
+  </form>
+{% endblock %}</div>
+
+        <hr class="section-rule">
+
+        <!-- =========================================================== -->
+        <h2 class="govuk-heading-l" id="microcopy">6. Microcopy</h2>
+        <p class="govuk-body">Plain UK English. Sentences short. No exclamation marks. No marketing tone. Use sentence case for headings, capitalise only proper nouns.</p>
+
+        <h3 class="govuk-heading-m">Page titles and headings</h3>
+        <table class="govuk-table copy-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Where</th>
+              <th class="govuk-table__header" scope="col">Text</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Browser title, list</td><td class="govuk-table__cell">Your tasks - Manage your tasks</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">H1, list</td><td class="govuk-table__cell">Your tasks</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Intro, list</td><td class="govuk-table__cell">Review and update the work items assigned to you. Tasks you create here are only visible to you.</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Browser title, create</td><td class="govuk-table__cell">Create a task - Manage your tasks</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Browser title, create (errors)</td><td class="govuk-table__cell">Error: Create a task - Manage your tasks</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">H1, create</td><td class="govuk-table__cell">Create a task</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Caption, create</td><td class="govuk-table__cell">Tasks</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Browser title, detail</td><td class="govuk-table__cell">[task title] - Manage your tasks</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Caption, detail</td><td class="govuk-table__cell">Task [task id]</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Browser title, delete</td><td class="govuk-table__cell">Are you sure you want to delete this task? - Manage your tasks</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="govuk-heading-m">Buttons, links and labels</h3>
+        <table class="govuk-table copy-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Element</th>
+              <th class="govuk-table__header" scope="col">Text</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Primary, list</td><td class="govuk-table__cell">Create a task</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Primary, empty state</td><td class="govuk-table__cell">Create your first task</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Empty body</td><td class="govuk-table__cell">You have no tasks yet.</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Action column link</td><td class="govuk-table__cell">View <code>&lt;span class="govuk-visually-hidden"&gt; [task id]&lt;/span&gt;</code></td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Back link, create + detail</td><td class="govuk-table__cell">Back to your tasks</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Back link, delete</td><td class="govuk-table__cell">Back to task</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Primary, create</td><td class="govuk-table__cell">Save task</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Cancel link</td><td class="govuk-table__cell">Cancel</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Primary, status update</td><td class="govuk-table__cell">Save status</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Warning, detail</td><td class="govuk-table__cell">Delete this task</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Warning, confirmation</td><td class="govuk-table__cell">Yes, delete this task</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Confirmation cancel</td><td class="govuk-table__cell">No, keep this task</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Field label</td><td class="govuk-table__cell">Title</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Field hint</td><td class="govuk-table__cell">Use a short, specific description, for example "Review bundle for CR-2026-0142".</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Field label</td><td class="govuk-table__cell">Description</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Field hint</td><td class="govuk-table__cell">Add any context that will help future you. You can leave this blank.</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Fieldset legend</td><td class="govuk-table__cell">Status</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Status hint</td><td class="govuk-table__cell">New tasks usually start as "To do".</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Status options</td><td class="govuk-table__cell">To do / In progress / Done</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Fieldset legend</td><td class="govuk-table__cell">Due date and time (optional)</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Due hint</td><td class="govuk-table__cell">For example, 20 5 2026 at 09 00. Leave blank if there is no deadline.</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Date sub-labels</td><td class="govuk-table__cell">Day / Month / Year / Hour / Minute</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Update legend</td><td class="govuk-table__cell">Update status</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Update hint</td><td class="govuk-table__cell">Changing status saves immediately.</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="govuk-heading-m">Validation error messages</h3>
+        <p class="govuk-body">Each appears both in the error summary at the top of the page and inline next to the offending field. Inline messages are prefixed with a visually-hidden "Error:" so they read sensibly when announced.</p>
+        <table class="govuk-table copy-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Rule</th>
+              <th class="govuk-table__header" scope="col">Message</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Title is empty</td><td class="govuk-table__cell">Enter a title</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Title is over 255 characters</td><td class="govuk-table__cell">Title must be 255 characters or fewer</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Status missing or unknown value</td><td class="govuk-table__cell">Select a status</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Due date partly filled</td><td class="govuk-table__cell">Enter a complete date and time, or leave all date and time fields blank</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Due date not a real date</td><td class="govuk-table__cell">Enter a real date and time</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Due date in the past</td><td class="govuk-table__cell">Due date must be today or in the future</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">Task not found, list redirect</td><td class="govuk-table__cell">This task could not be found. It may have been deleted.</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="govuk-heading-m">Notification banner copy</h3>
+        <table class="govuk-table copy-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header" scope="col">Trigger</th>
+              <th class="govuk-table__header" scope="col">Title</th>
+              <th class="govuk-table__header" scope="col">Heading</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row"><td class="govuk-table__cell">After create (redirected to detail)</td><td class="govuk-table__cell">Success</td><td class="govuk-table__cell">Task created</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">After status update (same page)</td><td class="govuk-table__cell">Success</td><td class="govuk-table__cell">Status updated</td></tr>
+            <tr class="govuk-table__row"><td class="govuk-table__cell">After delete (redirected to list)</td><td class="govuk-table__cell">Success</td><td class="govuk-table__cell">Task deleted</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="section-rule">
+
+        <!-- =========================================================== -->
+        <h2 class="govuk-heading-l" id="a11y">7. Accessibility checklist for build</h2>
+        <p class="govuk-body">Target: WCAG 2.2 AA. The list below is a build-team checklist, not an audit. Use it during PR review.</p>
+
+        <h3 class="govuk-heading-m">Landmarks and document structure</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Skip link with <code>href="#main-content"</code> as the first focusable element on every page.</li>
+          <li>One <code>&lt;main id="main-content"&gt;</code> per page. Service header is in <code>&lt;header role="banner"&gt;</code>, footer in <code>&lt;footer role="contentinfo"&gt;</code>.</li>
+          <li>Exactly one <code>&lt;h1&gt;</code> per page. Headings descend without skipping levels (h1 -&gt; h2 -&gt; h3).</li>
+          <li><code>&lt;html lang="en-GB"&gt;</code>.</li>
+        </ul>
+
+        <h3 class="govuk-heading-m">Focus order and visible focus</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Tab order on each screen follows visual reading order: skip link -&gt; service header link -&gt; back link -&gt; H1 (programmatic focus only) -&gt; form/content -&gt; footer.</li>
+          <li>Use GOV.UK Frontend default focus style (3px yellow outline, 4px black underline). Do not override.</li>
+          <li>On every navigation to a new page, programmatic focus moves to the main heading (set <code>tabindex="-1"</code> on the <code>&lt;h1&gt;</code> and call <code>focus()</code> after page load). On a page rendered with errors, focus moves to the error summary instead.</li>
+        </ul>
+
+        <h3 class="govuk-heading-m">Labels and id pairings</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Every input has an explicit <code>&lt;label for&gt;</code>. Group inputs (radios, date-input) live inside a <code>&lt;fieldset&gt;</code> with a <code>&lt;legend&gt;</code>.</li>
+          <li>Hints use <code>aria-describedby</code> pointing at the hint's id (<code>#title-hint</code>, <code>#due-hint</code>, etc).</li>
+          <li>Error messages use <code>aria-describedby</code> alongside the hint id (space-separated), and inputs in error get <code>aria-invalid="true"</code> and the <code>govuk-input--error</code> class.</li>
+          <li>Inline error text is prefixed with a visually-hidden "Error:" so it announces correctly.</li>
+        </ul>
+
+        <h3 class="govuk-heading-m">Error summary linking</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Summary appears at the top of <code>&lt;main&gt;</code>. Receives focus on render.</li>
+          <li>List order matches field order on the page.</li>
+          <li>Each link's href is the id of the first focusable input in that field:
+            <ul class="govuk-list govuk-list--bullet">
+              <li>Title -&gt; <code>#title</code></li>
+              <li>Status -&gt; <code>#status</code> (first radio input)</li>
+              <li>Due date and time -&gt; <code>#due-day</code></li>
+            </ul>
+          </li>
+          <li>Clicking a summary link moves focus to the input and scrolls it into view. Use the GOV.UK Frontend <code>error-summary</code> JS module - do not write a bespoke handler.</li>
+        </ul>
+
+        <h3 class="govuk-heading-m">Colour contrast</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Body text <code>#0b0c0c</code> on <code>#ffffff</code>: 19.6:1, passes AAA.</li>
+          <li>Hint text <code>#505a5f</code> on <code>#ffffff</code>: 7.0:1, passes AAA.</li>
+          <li>Links <code>#1d70b8</code> on <code>#ffffff</code>: 4.85:1, passes AA.</li>
+          <li>Tag text on tag background is set by GOV.UK Frontend defaults; do not change individual tag colours.</li>
+          <li>The blue header underline (10px <code>#1d70b8</code>) is decorative, not a content carrier - no contrast requirement.</li>
+          <li>Status tag colours (grey, blue, green) are never the only signal: the tag text label is always present alongside the colour.</li>
+        </ul>
+
+        <h3 class="govuk-heading-m">Keyboard interaction</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Radios: arrow keys move between options within a group and update the selection; Tab moves out of the group. This is browser-native and must not be overridden.</li>
+          <li>Buttons (<code>&lt;button type="submit"&gt;</code>) are activated by Space or Enter. Link-styled buttons (<code>role="button"</code> on an <code>&lt;a&gt;</code>) get the GOV.UK Frontend module attached so Space activates them too.</li>
+          <li>Back link is a plain <code>&lt;a&gt;</code>; Enter follows it.</li>
+          <li>All interactive controls have a visible focus ring (GOV.UK Frontend default).</li>
+        </ul>
+
+        <h3 class="govuk-heading-m">Responsive and zoom</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Usable at 320px width. The task table stacks to labelled cards below 641px.</li>
+          <li>Page reflows correctly at 200% zoom in a 1280x1024 viewport (WCAG 1.4.10).</li>
+          <li>Touch targets minimum 24x24 CSS pixels (WCAG 2.5.8); GOV.UK Frontend defaults already exceed this.</li>
+        </ul>
+
+        <h3 class="govuk-heading-m">Forms and state</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li><code>novalidate</code> on every form so the server, not the browser, owns the validation messages (consistent UK English wording).</li>
+          <li>Previously-entered values are preserved on validation failure. The server passes back a <code>values</code> object with every field.</li>
+          <li>Status update form and delete entry point are separate forms, so a misclick cannot trigger destructive action.</li>
+        </ul>
+
+        <hr class="section-rule">
+
+        <!-- =========================================================== -->
+        <h2 class="govuk-heading-l" id="scope">8. Out of scope</h2>
+        <p class="govuk-body">The build does not include any of the following. If a future story asks for one, treat it as a new design problem rather than a small addition.</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Filtering tasks by status or date range.</li>
+          <li>Sorting by column.</li>
+          <li>Pagination, infinite scroll, or any list virtualisation. The single user is expected to have a small caseload at a time.</li>
+          <li>Search.</li>
+          <li>Drag-and-drop reordering or status changes.</li>
+          <li>Bulk actions (multi-select rows, batch delete).</li>
+          <li>Editing the title, description, or due date after creation. Status is the only mutable field.</li>
+          <li>Comments, attachments, or any rich content beyond the description text area.</li>
+          <li>Multi-user features: assignment, sharing, mentions, audit log of who changed what.</li>
+          <li>Notifications, email, or any asynchronous comms.</li>
+          <li>Real-time updates or websockets. The page is fully rendered on each navigation.</li>
+          <li>Dark mode or theme switching. The service inherits the standard GOV.UK Frontend appearance.</li>
+        </ul>
+
+        <hr class="section-rule">
+
+        <h2 class="govuk-heading-l" id="notes">9. Build notes</h2>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Date storage: ISO 8601 UTC. Display in Europe/London via a Luxon helper, format string <code>d LLLL yyyy, HH:mm</code>.</li>
+          <li>Validation order: title -&gt; status -&gt; due. Error summary is built in this order.</li>
+          <li>CSRF: include a hidden token on every POST form. The GOV.UK Frontend macros do not add this for you.</li>
+          <li>POST/Redirect/GET: after a successful create or delete, redirect with 303 to the target page and use a flash message to render the success notification banner. After a status update, redirect to the same detail page with the flash. This prevents double-submit on refresh and keeps URLs shareable.</li>
+          <li>No PII in fixtures, ever. Example data uses fictional case references like <code>CR-2026-0142</code> and impersonal task titles.</li>
+        </ul>
+
+      </div>
+
+      <aside class="doc-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#screen-list">Task list</a></li>
+          <li><a href="#screen-create">Create a task</a></li>
+          <li><a href="#screen-detail">Task detail</a></li>
+          <li><a href="#screen-delete">Delete confirmation</a></li>
+          <li><a href="#microcopy">Microcopy</a></li>
+          <li><a href="#a11y">Accessibility</a></li>
+          <li><a href="#scope">Out of scope</a></li>
+          <li><a href="#notes">Build notes</a></li>
+        </ol>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<footer class="govuk-footer" role="contentinfo">
+  <div class="govuk-width-container">
+    <div class="govuk-footer__meta">
+      <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+        <ul class="govuk-footer__inline-list">
+          <li class="govuk-footer__inline-list-item"><a class="govuk-footer__link" href="prototype.html">Prototype</a></li>
+          <li class="govuk-footer__inline-list-item"><a class="govuk-footer__link" href="index.html">About</a></li>
+        </ul>
+        <span class="govuk-footer__licence-description">Built with GOV.UK Frontend. Design spec, not a live service.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
