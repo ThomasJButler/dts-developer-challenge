@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  # Cancel an in-progress run when the same ref pushes again, so successive
+  # commits to a PR don't stack up duplicate work in the queue.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (ruff + pytest)
+    runs-on: ubuntu-latest
+
+    services:
+      # Mirrors the local compose db service: same image, same default
+      # credentials, same default database. The conftest in backend/tests/
+      # then creates `tasks_test` from the `postgres` maintenance database
+      # on the first session, so we don't need a second DB pre-created.
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tasks
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d tasks"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # The suite swaps the final URL segment to `tasks_test` itself
+      # (see app/config.py::_derive_test_database_url), so pointing at the
+      # primary `tasks` DB here is correct.
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/tasks
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          # `cache: 'pip'` keys ~/.cache/pip on the requirements files at
+          # `cache-dependency-path`, so installs hit the wheel cache.
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Lint (ruff check)
+        run: ruff check .
+
+      - name: Format check (ruff format)
+        run: ruff format --check .
+
+      - name: Test (pytest with 85% coverage gate)
+        # --cov-fail-under=85 is set in pyproject.toml's pytest addopts,
+        # so no extra flags here.
+        run: pytest
+
+  frontend:
+    name: Frontend (eslint + mocha)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (eslint)
+        run: npm run lint
+
+      - name: Test (mocha)
+        run: npm test

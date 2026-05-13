@@ -1,5 +1,7 @@
 # DTS Developer Technical Test
 
+[![CI](https://github.com/ThomasJButler/dts-developer-challenge/actions/workflows/ci.yml/badge.svg)](https://github.com/ThomasJButler/dts-developer-challenge/actions/workflows/ci.yml)
+
 ## Objective
 To assess your ability to build a simple API and frontend using best coding practices.
 
