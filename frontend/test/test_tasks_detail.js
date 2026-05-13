@@ -2,9 +2,16 @@
 
 const request = require('supertest');
 const { expect } = require('chai');
+const { DateTime, Settings } = require('luxon');
 
 const { buildApp, extractCsrfToken } = require('./helpers/build_app');
 const { NotFoundError } = require('../app/lib/api-client');
+
+// Pin Luxon's "now" so the validateDue past-or-future rule is
+// deterministic across CI clocks and DST boundaries.
+const FIXED_NOW_MILLIS = DateTime.fromISO('2026-05-13T10:00:00', {
+  zone: 'Europe/London',
+}).toMillis();
 
 const SAMPLE_TASK = {
   id: 'CR-2026-0142',
@@ -176,6 +183,151 @@ describe('/tasks/:id', () => {
         .post('/tasks/CR-2026-0142/status')
         .type('form')
         .send({ status: 'done' });
+      expect(res.status).to.equal(403);
+    });
+  });
+
+  describe('POST /tasks/:id/due', () => {
+    before(() => { Settings.now = () => FIXED_NOW_MILLIS; });
+    after(() => { Settings.now = () => Date.now(); });
+
+    it('renders an empty "Update due date" form when the task has no due date', async () => {
+      const app = buildApp({
+        getTask: async () => ({ ...SAMPLE_TASK, due_at: null }),
+      });
+      const res = await request(app).get('/tasks/CR-2026-0142');
+      expect(res.text).to.include('Update due date');
+      expect(res.text).to.match(/name="due-day"\s+type="text"\s+value=""/);
+      expect(res.text).to.include('Leave all five fields blank to clear the due date.');
+    });
+
+    it('pre-fills the form with the existing due date in Europe/London', async () => {
+      const app = buildApp({ getTask: async () => SAMPLE_TASK });
+      const res = await request(app).get('/tasks/CR-2026-0142');
+      // 2026-05-20T08:00Z → 09:00 BST → day=20, month=05, year=2026, hour=09, minute=00.
+      expect(res.text).to.match(/name="due-day"\s+type="text"\s+value="20"/);
+      expect(res.text).to.match(/name="due-month"\s+type="text"\s+value="05"/);
+      expect(res.text).to.match(/name="due-year"\s+type="text"\s+value="2026"/);
+      expect(res.text).to.match(/name="due-hour"\s+type="text"\s+value="09"/);
+      expect(res.text).to.match(/name="due-minute"\s+type="text"\s+value="00"/);
+    });
+
+    it('calls updateTaskDue with a UTC ISO and redirects with flash.dueUpdated', async () => {
+      let captured;
+      const app = buildApp({
+        getTask: async () => ({ ...SAMPLE_TASK, due_at: null }),
+        updateTaskDue: async (id, dueIso) => {
+          captured = { id, dueIso };
+          return { ...SAMPLE_TASK, due_at: dueIso };
+        },
+      });
+      const agent = request.agent(app);
+      const detailRes = await agent.get('/tasks/CR-2026-0142');
+      const token = extractCsrfToken(detailRes.text);
+
+      const updateRes = await agent
+        .post('/tasks/CR-2026-0142/due')
+        .type('form')
+        .send({
+          _csrf: token,
+          'due-day': '20', 'due-month': '5', 'due-year': '2026',
+          'due-hour': '09', 'due-minute': '00',
+        });
+      expect(updateRes.status).to.equal(303);
+      expect(updateRes.headers.location).to.equal('/tasks/CR-2026-0142');
+      expect(captured).to.deep.equal({
+        id: 'CR-2026-0142',
+        dueIso: '2026-05-20T08:00:00.000Z',
+      });
+
+      // Flash banner renders on the follow-up detail GET.
+      const followRes = await agent.get('/tasks/CR-2026-0142');
+      expect(followRes.text).to.include('Due date updated');
+    });
+
+    it('sends null when the five inputs are blank (clear-due flow)', async () => {
+      let captured;
+      const app = buildApp({
+        getTask: async () => SAMPLE_TASK,
+        updateTaskDue: async (id, dueIso) => {
+          captured = { id, dueIso };
+          return { ...SAMPLE_TASK, due_at: null };
+        },
+      });
+      const agent = request.agent(app);
+      const detailRes = await agent.get('/tasks/CR-2026-0142');
+      const token = extractCsrfToken(detailRes.text);
+
+      const updateRes = await agent
+        .post('/tasks/CR-2026-0142/due')
+        .type('form')
+        .send({
+          _csrf: token,
+          'due-day': '', 'due-month': '', 'due-year': '',
+          'due-hour': '', 'due-minute': '',
+        });
+      expect(updateRes.status).to.equal(303);
+      expect(captured).to.deep.equal({ id: 'CR-2026-0142', dueIso: null });
+    });
+
+    it('re-renders the detail page with an error summary on a partial date', async () => {
+      const app = buildApp({
+        getTask: async () => SAMPLE_TASK,
+        updateTaskDue: async () => { throw new Error('updateTaskDue should not be called'); },
+      });
+      const agent = request.agent(app);
+      const detailRes = await agent.get('/tasks/CR-2026-0142');
+      const token = extractCsrfToken(detailRes.text);
+
+      const updateRes = await agent
+        .post('/tasks/CR-2026-0142/due')
+        .type('form')
+        .send({
+          _csrf: token,
+          'due-day': '20', 'due-month': '5', 'due-year': '',
+          'due-hour': '', 'due-minute': '',
+        });
+
+      expect(updateRes.status).to.equal(200);
+      // GOV.UK error summary at the top.
+      expect(updateRes.text).to.include('There is a problem');
+      expect(updateRes.text).to.include('Enter a complete date and time');
+      // Link to the first date input.
+      expect(updateRes.text).to.match(/href="#due-day"[^>]*>Enter a complete date and time/);
+      // Page title prefixed with "Error:" for assistive tech announcement.
+      expect(updateRes.text).to.match(/<title>Error:/);
+      // Submitted partial values are preserved.
+      expect(updateRes.text).to.match(/name="due-day"\s+type="text"\s+value="20"/);
+      expect(updateRes.text).to.match(/name="due-month"\s+type="text"\s+value="5"/);
+    });
+
+    it('rejects a past date with the GOV.UK error message', async () => {
+      const app = buildApp({
+        getTask: async () => SAMPLE_TASK,
+        updateTaskDue: async () => { throw new Error('updateTaskDue should not be called'); },
+      });
+      const agent = request.agent(app);
+      const detailRes = await agent.get('/tasks/CR-2026-0142');
+      const token = extractCsrfToken(detailRes.text);
+
+      const updateRes = await agent
+        .post('/tasks/CR-2026-0142/due')
+        .type('form')
+        .send({
+          _csrf: token,
+          'due-day': '1', 'due-month': '1', 'due-year': '2026',
+          'due-hour': '09', 'due-minute': '00',
+        });
+      expect(updateRes.status).to.equal(200);
+      expect(updateRes.text).to.include('Due date must be today or in the future');
+    });
+
+    it('rejects POST without a CSRF token', async () => {
+      const app = buildApp({ getTask: async () => SAMPLE_TASK });
+      const res = await request(app)
+        .post('/tasks/CR-2026-0142/due')
+        .type('form')
+        .send({});
       expect(res.status).to.equal(403);
     });
   });

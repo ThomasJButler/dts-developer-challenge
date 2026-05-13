@@ -100,6 +100,14 @@ function createApiClient({ baseUrl, fetchImpl } = {}) {
         { method: 'PATCH', body: { status } }
       );
     },
+    updateTaskDue(id, dueIso) {
+      // `dueIso` may be null to clear the due date — the backend
+      // accepts null per the contract.
+      return request(
+        `/tasks/${encodeURIComponent(id)}/due`,
+        { method: 'PATCH', body: { due_at: dueIso } }
+      );
+    },
     deleteTask(id) {
       return request(`/tasks/${encodeURIComponent(id)}`, { method: 'DELETE' });
     },

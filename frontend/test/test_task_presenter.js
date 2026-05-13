@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 
-const { presentTask, sortForList } = require('../app/lib/task-presenter');
+const { presentTask, sortForList, splitDueParts } = require('../app/lib/task-presenter');
 
 describe('presentTask', () => {
   it('maps status=todo to the grey "To do" tag', () => {
@@ -129,5 +129,32 @@ describe('sortForList', () => {
     const before = tasks.map(t => t.id);
     sortForList(tasks);
     expect(tasks.map(t => t.id)).to.deep.equal(before);
+  });
+});
+
+describe('splitDueParts', () => {
+  it('returns all-empty parts when the input is null', () => {
+    expect(splitDueParts(null)).to.deep.equal({
+      day: '', month: '', year: '', hour: '', minute: '',
+    });
+  });
+
+  it('returns all-empty parts when the input is not a valid ISO string', () => {
+    expect(splitDueParts('not-a-date')).to.deep.equal({
+      day: '', month: '', year: '', hour: '', minute: '',
+    });
+  });
+
+  it('shifts a May (BST) UTC ISO into Europe/London parts, zero-padded', () => {
+    // 2026-05-20T08:00Z is 09:00 BST.
+    expect(splitDueParts('2026-05-20T08:00:00Z')).to.deep.equal({
+      day: '20', month: '05', year: '2026', hour: '09', minute: '00',
+    });
+  });
+
+  it('leaves December (GMT) parts un-shifted', () => {
+    expect(splitDueParts('2026-12-20T09:00:00Z')).to.deep.equal({
+      day: '20', month: '12', year: '2026', hour: '09', minute: '00',
+    });
   });
 });

@@ -3,8 +3,8 @@
 const express = require('express');
 
 const { NotFoundError, ValidationError } = require('../lib/api-client');
-const { presentTask, sortForList } = require('../lib/task-presenter');
-const { validateTaskForm, buildErrorSummary } = require('../lib/task-form');
+const { presentTask, sortForList, splitDueParts } = require('../lib/task-presenter');
+const { validateTaskForm, validateDue, buildErrorSummary } = require('../lib/task-form');
 
 const router = express.Router();
 
@@ -78,13 +78,21 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+function renderDetail(res, { task, dueValues, dueError = null, status = 200 } = {}) {
+  const effectiveDueValues = dueValues || splitDueParts(task.due_at);
+  res.status(status).render('tasks/detail', {
+    task: presentTask(task),
+    dueValues: effectiveDueValues,
+    dueError,
+    dueErrorSummary: dueError ? [{ text: dueError, href: '#due-day' }] : [],
+    pageTitle: (dueError ? 'Error: ' : '') + task.title,
+  });
+}
+
 router.get('/:id', async (req, res, next) => {
   try {
     const task = await req.app.locals.apiClient.getTask(req.params.id);
-    res.render('tasks/detail', {
-      task: presentTask(task),
-      pageTitle: task.title,
-    });
+    renderDetail(res, { task });
   } catch (err) {
     if (err instanceof NotFoundError) {
       req.session.flash = { notFound: true };
@@ -122,6 +130,56 @@ router.post('/:id/delete', async (req, res, next) => {
       // view — the post-condition (no such task) holds either way.
       req.session.flash = { deleted: true };
       return res.redirect(303, '/tasks');
+    }
+    next(err);
+  }
+});
+
+router.post('/:id/due', async (req, res, next) => {
+  const { id } = req.params;
+  const dueValues = readDueFromBody(req.body);
+  const { error: dueError, iso } = validateDue(dueValues);
+
+  async function reRenderWithError(message) {
+    try {
+      const task = await req.app.locals.apiClient.getTask(id);
+      return renderDetail(res, { task, dueValues, dueError: message });
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        req.session.flash = { notFound: true };
+        return res.redirect(303, '/tasks');
+      }
+      throw err;
+    }
+  }
+
+  if (dueError) {
+    try {
+      return await reRenderWithError(dueError);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  try {
+    await req.app.locals.apiClient.updateTaskDue(id, iso);
+    req.session.flash = { dueUpdated: true };
+    return res.redirect(303, `/tasks/${encodeURIComponent(id)}`);
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      req.session.flash = { notFound: true };
+      return res.redirect(303, '/tasks');
+    }
+    if (err instanceof ValidationError) {
+      // Backend rejected something our local validator missed (e.g. a
+      // rule that drifts between the two). Surface it back through the
+      // same detail re-render path so the user sees the GOV.UK summary.
+      const apiDueError = (err.errors || []).find((e) => e.field === 'due_at');
+      try {
+        return await reRenderWithError(apiDueError ? apiDueError.message : 'Enter a real date and time');
+      } catch (err2) {
+        return next(err2);
+      }
     }
     next(err);
   }
