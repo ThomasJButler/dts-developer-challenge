@@ -1,0 +1,30 @@
+{% extends "govuk/template.njk" %}
+
+{% block pageTitle %}{{ pageTitle | default(serviceName) }}{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="/govuk/govuk-frontend.min.css">
+  <link rel="stylesheet" href="/public/styles/service-header.css">
+{% endblock %}
+
+{# The design handoff specifies a plain black service-header (no GOV.UK crown
+   or wordmark) because this is an internal HMCTS tool, not a page on gov.uk.
+   We replace the default govukHeader entirely. #}
+{% block header %}
+  <header class="service-header" role="banner">
+    <div class="govuk-width-container">
+      <div class="service-header__inner">
+        <a href="/" class="service-header__name">{{ serviceName }}</a>
+        <span class="service-header__meta">{{ serviceMetaText }}</span>
+      </div>
+    </div>
+  </header>
+{% endblock %}
+
+{% block bodyEnd %}
+  <script type="module" src="/govuk/govuk-frontend.min.js"></script>
+  <script type="module">
+    import { initAll } from '/govuk/govuk-frontend.min.js'
+    initAll()
+  </script>
+{% endblock %}
