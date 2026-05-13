@@ -86,7 +86,7 @@ Returned for missing required fields, oversize title, unknown status, or naive `
   "type": "about:blank",
   "title": "Unprocessable Entity",
   "status": 422,
-  "detail": "Request body failed validation",
+  "detail": "Request validation failed",
   "errors": [
     { "field": "title", "message": "field required" },
     { "field": "due_at", "message": "datetime must include a timezone offset" }
@@ -215,7 +215,7 @@ Returned for an unknown `status` value or a missing `status` field.
   "type": "about:blank",
   "title": "Unprocessable Entity",
   "status": 422,
-  "detail": "Request body failed validation",
+  "detail": "Request validation failed",
   "errors": [
     { "field": "status", "message": "value is not a valid enumeration member; permitted: 'todo', 'in_progress', 'done'" }
   ]
